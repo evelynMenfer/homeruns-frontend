@@ -11,6 +11,7 @@ const menuAdmin = [
 ]
 
 const menuOrganizacion = [
+  { path: '/inicio', label: 'Información', icon: 'ℹ️' },
   { path: '/mi-organizacion', label: 'Mi Organización', icon: '🏢' },
   { path: '/mis-proyectos', label: 'Mis Proyectos', icon: '📋' },
 ]

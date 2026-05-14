@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Registro from './pages/Registro'
 import Dashboard from './pages/Dashboard'
+import DashboardOrganizacion from './pages/DashboardOrganizacion'
 import Organizaciones from './pages/Organizaciones'
 import OrganizacionDetalle from './pages/OrganizacionDetalle'
 import Proyectos from './pages/Proyectos'
@@ -20,7 +21,7 @@ function RedireccionInicio() {
   const { token, esAdmin, cargando } = useAuth()
   if (cargando) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
   if (!token) return <Navigate to="/login" />
-  return esAdmin() ? <Navigate to="/dashboard" /> : <Navigate to="/mi-organizacion" />
+  return esAdmin() ? <Navigate to="/dashboard" /> : <Navigate to="/inicio" />
 }
 
 function App() {
@@ -55,6 +56,10 @@ function App() {
           } />
           <Route path="/mis-proyectos" element={
             <RutaProtegida><MisProyectos /></RutaProtegida>
+          } />
+
+          <Route path="/inicio" element={
+            <RutaProtegida><DashboardOrganizacion /></RutaProtegida>
           } />
 
           <Route path="*" element={<Navigate to="/" />} />
