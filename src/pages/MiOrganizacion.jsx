@@ -74,7 +74,7 @@ export default function MiOrganizacion() {
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Registra tu organización</h2>
           <p className="text-gray-500 mb-6">Aún no tienes una organización registrada.</p>
           <button onClick={() => setMostrarForm(true)}
-            className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg transition">
+            className="bg-[#D94218] hover:bg-[#B83510] text-white px-6 py-3 rounded-lg transition">
             + Registrar organización
           </button>
         </div>
@@ -98,7 +98,7 @@ export default function MiOrganizacion() {
         <input name={name} type={type}
           value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
           onChange={isDetalle ? handleDetalle : handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
       ) : (
         <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : organizacion[name]) || '—'}</p>
       )}
@@ -112,7 +112,7 @@ export default function MiOrganizacion() {
         <textarea name={name} rows={3}
           value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
           onChange={isDetalle ? handleDetalle : handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
       ) : (
         <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : organizacion[name]) || '—'}</p>
       )}
@@ -124,7 +124,7 @@ export default function MiOrganizacion() {
       <p className="text-xs text-gray-500 mb-1">¿Participó antes en el programa Home Runs?</p>
       {editando ? (
         <select name="participo_antes" value={form.participo_antes} onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
           <option value="N">No</option>
           <option value="S">Sí</option>
         </select>
@@ -150,7 +150,7 @@ export default function MiOrganizacion() {
         <div className="flex gap-2">
           {!editando ? (
             <button onClick={() => setEditando(true)}
-              className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm transition">
+              className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
               Editar
             </button>
           ) : (
@@ -160,7 +160,7 @@ export default function MiOrganizacion() {
                 Cancelar
               </button>
               <button onClick={handleGuardar} disabled={guardando}
-                className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg text-sm transition disabled:opacity-50">
+                className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
                 {guardando ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </>

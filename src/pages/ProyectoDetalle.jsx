@@ -115,7 +115,7 @@ export default function ProyectoDetalle() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)}
-            className="text-blue-600 hover:text-blue-800 text-sm">
+            className="text-[#D94218] hover:text-blue-800 text-sm">
             ← Volver
           </button>
           <h2 className="text-2xl font-bold text-gray-800">{proyecto.nombre_proyecto}</h2>
@@ -127,7 +127,7 @@ export default function ProyectoDetalle() {
           <div className="flex gap-2">
             {!editando ? (
               <button onClick={() => setEditando(true)}
-                className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm transition">
+                className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
                 Editar
               </button>
             ) : (
@@ -137,7 +137,7 @@ export default function ProyectoDetalle() {
                   Cancelar
                 </button>
                 <button onClick={handleGuardarEdit} disabled={guardandoEdit}
-                  className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg text-sm transition disabled:opacity-50">
+                  className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
                   {guardandoEdit ? 'Guardando...' : 'Guardar cambios'}
                 </button>
               </>
@@ -157,18 +157,18 @@ export default function ProyectoDetalle() {
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Nombre del proyecto</label>
                   <input name="nombre_proyecto" value={formEdit.nombre_proyecto} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Responsable</label>
                     <input name="responsable" value={formEdit.responsable} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Clasificación</label>
                     <select name="clasificacion" value={formEdit.clasificacion} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                       <option value="Primera vez">Primera vez</option>
                       <option value="Continuidad">Continuidad</option>
                       <option value="Ejecutado anteriormente">Ejecutado anteriormente</option>
@@ -177,28 +177,28 @@ export default function ProyectoDetalle() {
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Monto solicitado</label>
                     <input name="monto_solicitado" type="number" value={formEdit.monto_solicitado} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Costo total</label>
                     <input name="costo_total" type="number" value={formEdit.costo_total} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Fecha inicio</label>
                     <input name="fecha_inicio" type="date" value={formEdit.fecha_inicio} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Fecha término</label>
                     <input name="fecha_termino" type="date" value={formEdit.fecha_termino} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Descripción</label>
                   <textarea name="descripcion" value={formEdit.descripcion} onChange={handleChange} rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
               </div>
             ) : (
@@ -292,13 +292,13 @@ export default function ProyectoDetalle() {
               <h3 className="font-semibold text-gray-700 mb-3">Cambiar estado</h3>
               {!cambiandoEstado ? (
                 <button onClick={() => setCambiandoEstado(true)}
-                  className="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 rounded-lg text-sm transition">
+                  className="w-full border border-[#D94218] text-[#D94218] hover:bg-orange-50 py-2 rounded-lg text-sm transition">
                   Cambiar estado
                 </button>
               ) : (
                 <div className="space-y-3">
                   <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                     {estados.map(e => (
                       <option key={e} value={e}>{e}</option>
                     ))}
@@ -308,7 +308,7 @@ export default function ProyectoDetalle() {
                     onChange={e => setComentario(e.target.value)}
                     placeholder="Comentario (opcional)"
                     rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
                   />
                   <div className="flex gap-2">
                     <button onClick={() => setCambiandoEstado(false)}
@@ -316,7 +316,7 @@ export default function ProyectoDetalle() {
                       Cancelar
                     </button>
                     <button onClick={handleCambiarEstado} disabled={guardando}
-                      className="flex-1 bg-blue-700 text-white py-2 rounded-lg text-sm hover:bg-blue-800 transition disabled:opacity-50">
+                      className="flex-1 bg-[#D94218] text-white py-2 rounded-lg text-sm hover:bg-[#B83510] transition disabled:opacity-50">
                       {guardando ? 'Guardando...' : 'Guardar'}
                     </button>
                   </div>
@@ -333,17 +333,17 @@ export default function ProyectoDetalle() {
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Municipio</label>
                   <input name="municipio" value={formEdit.municipio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Estado</label>
                   <input name="estado" value={formEdit.estado} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
                   <input name="domicilio" value={formEdit.domicilio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
               </div>
             ) : (

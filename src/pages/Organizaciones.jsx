@@ -36,7 +36,7 @@ export default function Organizaciones() {
         <h2 className="text-2xl font-bold text-gray-800">Organizaciones</h2>
         <button
           onClick={() => setMostrarForm(true)}
-          className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm transition">
+          className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
           + Nueva organización
         </button>
       </div>
@@ -77,7 +77,7 @@ export default function Organizaciones() {
                   <td className="px-6 py-3">
                   <button
                     onClick={() => navigate(`/organizaciones/${org.id_organizacion}`)}
-                    className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                    className="text-[#D94218] hover:text-blue-800 text-xs font-medium">
                     Ver detalle
                   </button>
                   </td>

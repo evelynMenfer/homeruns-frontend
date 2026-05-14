@@ -95,22 +95,22 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">RFC</label>
               <input name="rfc" value={form.rfc} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
               <input name="telefono" value={form.telefono} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input name="email" type="email" value={form.email} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">¿Participó antes?</label>
               <select name="participo_antes" value={form.participo_antes} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                 <option value="N">No</option>
                 <option value="S">Sí</option>
               </select>
@@ -120,7 +120,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Dirección fiscal</label>
             <textarea name="direccion_fiscal" value={form.direccion_fiscal} onChange={handleChange} rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
           </div>
 
           {/* Campos AC */}
@@ -131,33 +131,33 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Razón social</label>
                   <input name="razon_social" value={detalle.razon_social} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Representante</label>
                   <input name="nombre_representante" value={detalle.nombre_representante} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Núm. empleados</label>
                   <input name="num_empleados" type="number" value={detalle.num_empleados} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Presupuesto anual</label>
                   <input name="presupuesto_anual" type="number" value={detalle.presupuesto_anual} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Objeto social</label>
                 <textarea name="objeto_social" value={detalle.objeto_social} onChange={handleDetalle} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Problemática</label>
                 <textarea name="problematica" value={detalle.problematica} onChange={handleDetalle} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
             </div>
           )}
@@ -170,33 +170,33 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del municipio</label>
                   <input name="nombre_municipio" value={detalle.nombre_municipio} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del presidente</label>
                   <input name="nombre_presidente" value={detalle.nombre_presidente} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del síndico</label>
                   <input name="nombre_sindicato" value={detalle.nombre_sindicato} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Período de gestión</label>
                   <input name="periodo_gestion" value={detalle.periodo_gestion} onChange={handleDetalle}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Actividad económica</label>
                 <textarea name="actividad_economica" value={detalle.actividad_economica} onChange={handleDetalle} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Logros alcanzados</label>
                 <textarea name="logros_alcanzados" value={detalle.logros_alcanzados} onChange={handleDetalle} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
             </div>
           )}
@@ -207,7 +207,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
               Cancelar
             </button>
             <button type="submit" disabled={cargando}
-              className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-sm transition disabled:opacity-50">
+              className="px-4 py-2 bg-[#D94218] hover:bg-[#B83510] text-white rounded-lg text-sm transition disabled:opacity-50">
               {cargando ? 'Guardando...' : 'Guardar organización'}
             </button>
           </div>

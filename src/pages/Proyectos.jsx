@@ -44,7 +44,7 @@ export default function Proyectos() {
         <h2 className="text-2xl font-bold text-gray-800">Proyectos</h2>
         <button
           onClick={() => setMostrarForm(true)}
-          className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm transition">
+          className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
           + Nuevo proyecto
         </button>
       </div>
@@ -89,7 +89,7 @@ export default function Proyectos() {
                   <td className="px-6 py-3">
                   <button
                     onClick={() => navigate(`/proyectos/${p.id_proyecto}`)}
-                    className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                    className="text-[#D94218] hover:text-blue-800 text-xs font-medium">
                     Ver detalle
                   </button>
                   </td>

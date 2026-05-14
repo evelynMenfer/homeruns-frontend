@@ -20,10 +20,19 @@ export default function Sidebar() {
   const menu = esAdmin() ? menuAdmin : menuOrganizacion
 
   return (
-    <aside className="w-64 bg-blue-900 min-h-screen flex flex-col">
-      <div className="p-6 border-b border-blue-800">
-        <h1 className="text-white text-xl font-bold">Homeruns</h1>
-        <p className="text-blue-300 text-xs mt-1">Gestión de Proyectos</p>
+    <aside className="w-64 min-h-screen flex flex-col" style={{ background: '#1A1A2E' }}>
+      {/* Logo */}
+      <div className="p-6 border-b" style={{ borderColor: '#2A2A3E' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+            style={{ background: '#D94218' }}>
+            HR
+          </div>
+          <div>
+            <h1 className="text-white text-base font-bold">Home Runs</h1>
+            <p className="text-xs" style={{ color: '#9CA3AF' }}>Gestión de Proyectos</p>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
@@ -34,10 +43,11 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition ${
                 isActive
-                  ? 'bg-blue-700 text-white font-medium'
-                  : 'text-blue-200 hover:bg-blue-800 hover:text-white'
+                  ? 'text-white font-medium'
+                  : 'text-gray-400 hover:text-white'
               }`
             }
+            style={({ isActive }) => isActive ? { background: '#D94218' } : {}}
           >
             <span>{item.icon}</span>
             {item.label}
@@ -45,14 +55,17 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-blue-800">
-        <p className="text-blue-300 text-xs mb-1">{usuario?.nombre} {usuario?.apellido}</p>
-        <p className="text-blue-400 text-xs mb-3">
+      <div className="p-4 border-t" style={{ borderColor: '#2A2A3E' }}>
+        <p className="text-xs mb-0.5 font-medium text-white">{usuario?.nombre} {usuario?.apellido}</p>
+        <p className="text-xs mb-3" style={{ color: '#9CA3AF' }}>
           {esAdmin() ? 'Administrador' : 'Organización'}
         </p>
         <button
           onClick={logout}
-          className="w-full bg-blue-800 hover:bg-blue-700 text-white text-sm py-2 rounded-lg transition">
+          className="w-full text-white text-sm py-2 rounded-lg transition"
+          style={{ background: '#D94218' }}
+          onMouseEnter={e => e.target.style.background = '#B83510'}
+          onMouseLeave={e => e.target.style.background = '#D94218'}>
           Cerrar sesión
         </button>
       </div>

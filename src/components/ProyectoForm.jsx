@@ -109,7 +109,7 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
               </div>
             ) : (
               <select name="id_organizacion" value={form.id_organizacion} onChange={handleChange} required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                 <option value="">Seleccionar...</option>
                 {organizaciones.map(org => (
                   <option key={org.id_organizacion} value={org.id_organizacion}>
@@ -124,14 +124,14 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del proyecto *</label>
             <input name="nombre_proyecto" value={form.nombre_proyecto} onChange={handleChange} required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Rubro principal del proyecto *</label>
               <select name="id_categoria" value={form.id_categoria} onChange={handleChange} required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                 <option value="">Seleccionar...</option>
                 {categorias.map(cat => (
                   <option key={cat.id_categoria} value={cat.id_categoria}>
@@ -144,7 +144,7 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Clasificación</label>
               <select name="clasificacion" value={form.clasificacion} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                 <option value="Primera vez">Primera vez</option>
                 <option value="Continuidad">Continuidad</option>
                 <option value="Ejecutado anteriormente">Ejecutado anteriormente</option>
@@ -154,34 +154,34 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Monto solicitado</label>
               <input name="monto_solicitado" type="number" value={form.monto_solicitado} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Costo total</label>
               <input name="costo_total" type="number" value={form.costo_total} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fecha inicio</label>
               <input name="fecha_inicio" type="date" value={form.fecha_inicio} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Fecha término</label>
               <input name="fecha_termino" type="date" value={form.fecha_termino} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Responsable</label>
               <input name="responsable" value={form.responsable} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
             <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
           </div>
 
           <div className="border-t pt-4">
@@ -190,17 +190,17 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Municipio</label>
                 <input name="municipio" value={ubicacion.municipio} onChange={handleUbicacion}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                 <input name="estado" value={ubicacion.estado} onChange={handleUbicacion}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Domicilio</label>
                 <input name="domicilio" value={ubicacion.domicilio} onChange={handleUbicacion}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
               Cancelar
             </button>
             <button type="submit" disabled={cargando}
-              className="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-sm transition disabled:opacity-50">
+              className="px-4 py-2 bg-[#D94218] hover:bg-[#B83510] text-white rounded-lg text-sm transition disabled:opacity-50">
               {cargando ? 'Guardando...' : 'Guardar proyecto'}
             </button>
           </div>

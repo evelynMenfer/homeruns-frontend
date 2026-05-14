@@ -81,7 +81,7 @@ export default function OrganizacionDetalle() {
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/organizaciones')}
-            className="text-blue-600 hover:text-blue-800 text-sm">
+            className="text-[#D94218] hover:text-blue-800 text-sm">
             ← Volver
           </button>
           <h2 className="text-2xl font-bold text-gray-800">
@@ -97,7 +97,7 @@ export default function OrganizacionDetalle() {
           {!editando && (
             <>
               <button onClick={() => setEditando(true)}
-                className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg text-sm transition">
+                className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
                 Editar
               </button>
               <button onClick={handleEliminar}
@@ -113,7 +113,7 @@ export default function OrganizacionDetalle() {
                 Cancelar
               </button>
               <button onClick={handleGuardar} disabled={guardando}
-                className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg text-sm transition disabled:opacity-50">
+                className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
                 {guardando ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </>
@@ -142,7 +142,7 @@ export default function OrganizacionDetalle() {
                 <p className="text-xs text-gray-500 mb-1">{campo.label}</p>
                 {editando ? (
                   <input name={campo.name} type={campo.type || 'text'} value={form[campo.name]} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 ) : (
                   <p className="text-sm font-medium">{org[campo.name] || '—'}</p>
                 )}
@@ -152,7 +152,7 @@ export default function OrganizacionDetalle() {
               <p className="text-xs text-gray-500 mb-1">¿Participó antes?</p>
               {editando ? (
                 <select name="participo_antes" value={form.participo_antes} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
                   <option value="N">No</option>
                   <option value="S">Sí</option>
                 </select>
@@ -164,7 +164,7 @@ export default function OrganizacionDetalle() {
               <p className="text-xs text-gray-500 mb-1">Dirección fiscal</p>
               {editando ? (
                 <textarea name="direccion_fiscal" value={form.direccion_fiscal} onChange={handleChange} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
               ) : (
                 <p className="text-sm font-medium">{org.direccion_fiscal || '—'}</p>
               )}
@@ -192,7 +192,7 @@ export default function OrganizacionDetalle() {
                     {editando ? (
                       <input name={campo.name} type={campo.type || 'text'}
                         value={form.asociacion_civil?.[campo.name] || ''} onChange={handleDetalle}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                     ) : (
                       <p className="text-sm font-medium">{detalle?.[campo.name] || '—'}</p>
                     )}
@@ -212,7 +212,7 @@ export default function OrganizacionDetalle() {
                     <p className="text-xs text-gray-500 mb-1">{campo.label}</p>
                     {editando ? (
                       <input name={campo.name} value={form.municipio?.[campo.name] || ''} onChange={handleDetalle}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                     ) : (
                       <p className="text-sm font-medium">{detalle?.[campo.name] || '—'}</p>
                     )}
