@@ -14,6 +14,14 @@ const estadoColor = {
 
 const estados = ['En revision', 'Aprobado', 'Rechazado', 'En ejecucion', 'Finalizado']
 
+const rangosBenef = [
+  { label: '0-12 años', campoM: 'beneficiarios_012m', campoH: 'beneficiarios_012h' },
+  { label: '13-29 años', campoM: 'beneficiarios_1329m', campoH: 'beneficiarios_1329h' },
+  { label: '30-59 años', campoM: 'beneficiarios_3059m', campoH: 'beneficiarios_3059h' },
+  { label: '60-64 años', campoM: 'beneficiarios_6064m', campoH: 'beneficiarios_6064h' },
+  { label: '65+ años', campoM: 'beneficiarios_65m', campoH: 'beneficiarios_65h' },
+]
+
 export default function ProyectoDetalle() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -27,9 +35,19 @@ export default function ProyectoDetalle() {
   const [editando, setEditando] = useState(false)
   const [guardandoEdit, setGuardandoEdit] = useState(false)
   const [formEdit, setFormEdit] = useState({})
+  const [beneficiarios, setBeneficiarios] = useState({
+    beneficiarios_012m: 0, beneficiarios_012h: 0,
+    beneficiarios_1329m: 0, beneficiarios_1329h: 0,
+    beneficiarios_3059m: 0, beneficiarios_3059h: 0,
+    beneficiarios_6064m: 0, beneficiarios_6064h: 0,
+    beneficiarios_65m: 0, beneficiarios_65h: 0,
+    beneficiarios_indirectos: 0, indicadores: '',
+    total_beneficiarios: 0
+  })
 
   useEffect(() => {
     cargarProyecto()
+    cargarBeneficiarios()
   }, [id])
 
   const cargarProyecto = async () => {
@@ -49,6 +67,7 @@ export default function ProyectoDetalle() {
         municipio: res.data.ubicacion?.municipio || '',
         estado: res.data.ubicacion?.estado || '',
         domicilio: res.data.ubicacion?.domicilio || '',
+        aplicacion: res.data.ubicacion?.aplicacion || '',
       })
     } catch (err) {
       console.error(err)
@@ -57,13 +76,19 @@ export default function ProyectoDetalle() {
     }
   }
 
+  const cargarBeneficiarios = async () => {
+    try {
+      const res = await api.get(`/proyectos/${id}/beneficiarios`)
+      if (res.data) setBeneficiarios(res.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   const handleCambiarEstado = async () => {
     setGuardando(true)
     try {
-      await api.patch(`/proyectos/${id}/estado`, {
-        estado_actual: nuevoEstado,
-        comentario
-      })
+      await api.patch(`/proyectos/${id}/estado`, { estado_actual: nuevoEstado, comentario })
       setComentario('')
       setCambiandoEstado(false)
       cargarProyecto()
@@ -77,13 +102,12 @@ export default function ProyectoDetalle() {
   const handleGuardarEdit = async () => {
     setGuardandoEdit(true)
     try {
-      // Actualizar ubicación
       await api.put(`/ubicaciones/${proyecto.id_ubicacion}`, {
         municipio: formEdit.municipio,
         estado: formEdit.estado,
         domicilio: formEdit.domicilio,
+        aplicacion: formEdit.aplicacion,
       })
-      // Actualizar proyecto
       await api.put(`/proyectos/${id}`, {
         nombre_proyecto: formEdit.nombre_proyecto,
         descripcion: formEdit.descripcion,
@@ -94,8 +118,10 @@ export default function ProyectoDetalle() {
         fecha_termino: formEdit.fecha_termino,
         clasificacion: formEdit.clasificacion,
       })
+      await api.post(`/proyectos/${id}/beneficiarios`, beneficiarios)
       setEditando(false)
       cargarProyecto()
+      cargarBeneficiarios()
     } catch (err) {
       console.error(err)
     } finally {
@@ -107,6 +133,18 @@ export default function ProyectoDetalle() {
     setFormEdit({ ...formEdit, [e.target.name]: e.target.value })
   }
 
+  const handleBenefChange = (e) => {
+    const val = e.target.type === 'number' ? Number(e.target.value) : e.target.value
+    const updated = { ...beneficiarios, [e.target.name]: val }
+    updated.total_beneficiarios =
+      (Number(updated.beneficiarios_012m) || 0) + (Number(updated.beneficiarios_012h) || 0) +
+      (Number(updated.beneficiarios_1329m) || 0) + (Number(updated.beneficiarios_1329h) || 0) +
+      (Number(updated.beneficiarios_3059m) || 0) + (Number(updated.beneficiarios_3059h) || 0) +
+      (Number(updated.beneficiarios_6064m) || 0) + (Number(updated.beneficiarios_6064h) || 0) +
+      (Number(updated.beneficiarios_65m) || 0) + (Number(updated.beneficiarios_65h) || 0)
+    setBeneficiarios(updated)
+  }
+
   if (cargando) return <Layout><p className="text-gray-400">Cargando...</p></Layout>
   if (!proyecto) return <Layout><p className="text-gray-400">Proyecto no encontrado.</p></Layout>
 
@@ -114,10 +152,7 @@ export default function ProyectoDetalle() {
     <Layout>
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)}
-            className="text-[#D94218] hover:text-blue-800 text-sm">
-            ← Volver
-          </button>
+          <button onClick={() => navigate(-1)} className="text-[#D94218] text-sm">← Volver</button>
           <h2 className="text-2xl font-bold text-gray-800">{proyecto.nombre_proyecto}</h2>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${estadoColor[proyecto.estado_actual]}`}>
             {proyecto.estado_actual}
@@ -132,7 +167,7 @@ export default function ProyectoDetalle() {
               </button>
             ) : (
               <>
-                <button onClick={() => { setEditando(false); cargarProyecto() }}
+                <button onClick={() => { setEditando(false); cargarProyecto(); cargarBeneficiarios() }}
                   className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
                   Cancelar
                 </button>
@@ -147,9 +182,9 @@ export default function ProyectoDetalle() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        {/* Info general */}
         <div className="md:col-span-2 space-y-6">
+
+          {/* Info general */}
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold text-gray-700 mb-4">Información general</h3>
             {editando ? (
@@ -180,7 +215,7 @@ export default function ProyectoDetalle() {
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Costo total</label>
+                    <label className="block text-xs text-gray-500 mb-1">Costo total del proyecto</label>
                     <input name="costo_total" type="number" value={formEdit.costo_total} onChange={handleChange}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   </div>
@@ -196,53 +231,114 @@ export default function ProyectoDetalle() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Descripción</label>
+                  <label className="block text-xs text-gray-500 mb-1">Objeto, metas y alcance del proyecto</label>
                   <textarea name="descripcion" value={formEdit.descripcion} onChange={handleChange} rows={3}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Aplicación del donativo solicitado</label>
+                  <textarea name="aplicacion" value={formEdit.aplicacion || ''} onChange={handleChange} rows={2}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-500">Responsable</p>
-                  <p className="font-medium">{proyecto.responsable || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Clasificación</p>
-                  <p className="font-medium">{proyecto.clasificacion || '—'}</p>
-                </div>
+                <div><p className="text-gray-500">Responsable</p><p className="font-medium">{proyecto.responsable || '—'}</p></div>
+                <div><p className="text-gray-500">Clasificación</p><p className="font-medium">{proyecto.clasificacion || '—'}</p></div>
                 <div>
                   <p className="text-gray-500">Monto solicitado</p>
-                  <p className="font-medium">
-                    {proyecto.monto_solicitado
-                      ? `$${Number(proyecto.monto_solicitado).toLocaleString('es-MX')}`
-                      : '—'}
-                  </p>
+                  <p className="font-medium">{proyecto.monto_solicitado ? `$${Number(proyecto.monto_solicitado).toLocaleString('es-MX')}` : '—'}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Costo total</p>
-                  <p className="font-medium">
-                    {proyecto.costo_total
-                      ? `$${Number(proyecto.costo_total).toLocaleString('es-MX')}`
-                      : '—'}
-                  </p>
+                  <p className="font-medium">{proyecto.costo_total ? `$${Number(proyecto.costo_total).toLocaleString('es-MX')}` : '—'}</p>
                 </div>
-                <div>
-                  <p className="text-gray-500">Fecha inicio</p>
-                  <p className="font-medium">{proyecto.fecha_inicio || '—'}</p>
+                <div><p className="text-gray-500">Fecha inicio</p><p className="font-medium">{proyecto.fecha_inicio || '—'}</p></div>
+                <div><p className="text-gray-500">Fecha término</p><p className="font-medium">{proyecto.fecha_termino || '—'}</p></div>
+                <div className="col-span-2">
+                  <p className="text-gray-500">Objeto, metas y alcance del proyecto</p>
+                  <p className="mt-1">{proyecto.descripcion || '—'}</p>
                 </div>
-                <div>
-                  <p className="text-gray-500">Fecha término</p>
-                  <p className="font-medium">{proyecto.fecha_termino || '—'}</p>
+                <div className="col-span-2">
+                  <p className="text-gray-500">Aplicación del donativo solicitado</p>
+                  <p className="mt-1">{proyecto.ubicacion?.aplicacion || '—'}</p>
                 </div>
-                {proyecto.descripcion && (
-                  <div className="col-span-2">
-                    <p className="text-gray-500">Descripción</p>
-                    <p className="mt-1">{proyecto.descripcion}</p>
-                  </div>
-                )}
               </div>
             )}
+          </div>
+
+          {/* Beneficiarios */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold text-gray-700 mb-4">Beneficiarios directos</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm mb-4">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 text-gray-500 font-medium">Rango de edad</th>
+                    <th className="text-center py-2 text-gray-500 font-medium">Mujeres</th>
+                    <th className="text-center py-2 text-gray-500 font-medium">Hombres</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {rangosBenef.map(rango => (
+                    <tr key={rango.label}>
+                      <td className="py-2 text-gray-700">{rango.label}</td>
+                      <td className="py-2 text-center">
+                        {editando ? (
+                          <input type="number" name={rango.campoM}
+                            value={beneficiarios[rango.campoM] === 0 ? '' : beneficiarios[rango.campoM]}
+                            onChange={handleBenefChange} min="0"
+                            className="w-20 border border-gray-300 rounded px-2 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-[#D94218]" />
+                        ) : (
+                          <span className="font-medium">{beneficiarios[rango.campoM] || 0}</span>
+                        )}
+                      </td>
+                      <td className="py-2 text-center">
+                        {editando ? (
+                          <input type="number" name={rango.campoH}
+                            value={beneficiarios[rango.campoH] === 0 ? '' : beneficiarios[rango.campoH]}
+                            onChange={handleBenefChange} min="0"
+                            className="w-20 border border-gray-300 rounded px-2 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-[#D94218]" />
+                        ) : (
+                          <span className="font-medium">{beneficiarios[rango.campoH] || 0}</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
+              <div>
+                <p className="text-gray-500 mb-1">Total beneficiarios directos</p>
+                <p className="text-xl font-bold" style={{ color: '#D94218' }}>
+                  {beneficiarios.total_beneficiarios || 0}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">Beneficiarios indirectos</p>
+                {editando ? (
+                  <input type="number" name="beneficiarios_indirectos"
+                    value={beneficiarios.beneficiarios_indirectos === 0 ? '' : beneficiarios.beneficiarios_indirectos}
+                    onChange={handleBenefChange} min="0"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                ) : (
+                  <p className="text-xl font-bold text-gray-700">{beneficiarios.beneficiarios_indirectos || 0}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <p className="text-gray-500 text-sm mb-1">Indicadores que permitirán evaluar el proyecto</p>
+              {editando ? (
+                <textarea name="indicadores" value={beneficiarios.indicadores || ''} onChange={handleBenefChange} rows={3}
+                  placeholder="Describe los indicadores del proyecto..."
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+              ) : (
+                <p className="text-sm text-gray-700">{beneficiarios.indicadores || '—'}</p>
+              )}
+            </div>
           </div>
 
           {/* Historial de estados */}
@@ -254,7 +350,7 @@ export default function ProyectoDetalle() {
               <div className="space-y-3">
                 {proyecto.historial_estado?.map(h => (
                   <div key={h.id_historial} className="flex items-start gap-3 text-sm">
-                    <div className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
+                    <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#D94218' }}></div>
                     <div>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${estadoColor[h.estado] || 'bg-gray-100 text-gray-700'}`}>
                         {h.estado}
@@ -271,8 +367,6 @@ export default function ProyectoDetalle() {
 
         {/* Panel lateral */}
         <div className="space-y-6">
-
-          {/* Organización */}
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold text-gray-700 mb-3">Organización</h3>
             <p className="text-sm font-medium">
@@ -286,7 +380,6 @@ export default function ProyectoDetalle() {
             <p className="text-xs text-gray-500">{proyecto.organizacion?.email}</p>
           </div>
 
-          {/* Cambiar estado - solo admin */}
           {esAdmin() && (
             <div className="bg-white rounded-xl shadow p-6">
               <h3 className="font-semibold text-gray-700 mb-3">Cambiar estado</h3>
@@ -303,13 +396,9 @@ export default function ProyectoDetalle() {
                       <option key={e} value={e}>{e}</option>
                     ))}
                   </select>
-                  <textarea
-                    value={comentario}
-                    onChange={e => setComentario(e.target.value)}
-                    placeholder="Comentario (opcional)"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
-                  />
+                  <textarea value={comentario} onChange={e => setComentario(e.target.value)}
+                    placeholder="Comentario (opcional)" rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
                   <div className="flex gap-2">
                     <button onClick={() => setCambiandoEstado(false)}
                       className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition">
@@ -325,9 +414,8 @@ export default function ProyectoDetalle() {
             </div>
           )}
 
-          {/* Ubicación */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-3">Ubicación</h3>
+            <h3 className="font-semibold text-gray-700 mb-3">Ubicación geográfica del proyecto</h3>
             {editando ? (
               <div className="space-y-3">
                 <div>
@@ -353,7 +441,6 @@ export default function ProyectoDetalle() {
               </>
             )}
           </div>
-
         </div>
       </div>
     </Layout>

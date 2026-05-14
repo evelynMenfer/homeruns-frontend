@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import OrganizacionForm from '../components/OrganizacionForm'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 export default function Organizaciones() {
   const [organizaciones, setOrganizaciones] = useState([])
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
   const navigate = useNavigate()
+  const { esAdmin } = useAuth()
 
   useEffect(() => {
     cargarOrganizaciones()
@@ -34,11 +36,13 @@ export default function Organizaciones() {
     <Layout>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Organizaciones</h2>
-        <button
-          onClick={() => setMostrarForm(true)}
-          className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
-          + Nueva organización
-        </button>
+        {!esAdmin() && (
+          <button
+            onClick={() => setMostrarForm(true)}
+            className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
+            + Nueva organización
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow overflow-hidden">

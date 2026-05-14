@@ -14,12 +14,12 @@ export default function DashboardOrganizacion() {
               <span className="text-2xl font-bold" style={{ color: '#D94218' }}>HR</span>
             </div>
             <h1 className="text-3xl font-bold uppercase tracking-wide">
-              Registro Home Runs 2025
+              Registro Home Runs 2026
             </h1>
           </div>
 
           <p className="text-sm leading-relaxed mb-2">
-            Bienvenido al <strong>Programa Home Runs Banamex 2025</strong>,
+            Bienvenido al <strong>Programa Home Runs Banamex 2026</strong>,
             organizado por la <strong>Fundación Alfredo Harp Helú Oaxaca</strong> en colaboración con{' '}
             <strong>Fomento Social Banamex</strong>. Este sistema tiene como objetivo{' '}
             <strong>agilizar el registro y recopilación de información</strong> de las organizaciones
@@ -84,7 +84,7 @@ export default function DashboardOrganizacion() {
               <p className="text-xs font-medium text-gray-600 mb-2">Accesos rápidos</p>
               <Link to="/mi-organizacion"
                 className="flex items-center gap-2 p-2 rounded-lg text-sm text-white transition"
-                style={{ background: '#D94218' }}>
+                style={{ background: '#FEF2F2', color: '#D94218' }}>
                 🏢 Completar datos de mi organización
               </Link>
               <Link to="/mis-proyectos"

@@ -179,7 +179,7 @@ export default function MiOrganizacion() {
         {/* Izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
           <h3 className="font-semibold text-gray-700 mb-4">
-            {esAC ? 'Asociación Civil' : 'Municipio'}
+            {/*esAC ? 'Asociación Civil' : 'Municipio'*/}
           </h3>
           <div className="space-y-4">
             {esAC ? (
@@ -200,7 +200,6 @@ export default function MiOrganizacion() {
                 {campoTexto('Teléfono', 'telefono')}
                 {campoTexto('Correo electrónico', 'email', false, 'email')}
                 {campoTextarea('Dirección fiscal del municipio', 'direccion_fiscal')}
-                {campoParticipo()}
               </>
             )}
           </div>
@@ -223,6 +222,7 @@ export default function MiOrganizacion() {
               </>
             ) : (
               <>
+                {campoParticipo()}
                 {campoTextarea('Logros alcanzados en su administración', 'logros_alcanzados', true)}
                 {campoTexto('Período de gestión administrativa', 'periodo_gestion', true)}
                 {campoTextarea('Actividad económica de su municipio', 'actividad_economica', true)}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 export default function OrganizacionDetalle() {
   const { id } = useParams()
@@ -12,6 +13,7 @@ export default function OrganizacionDetalle() {
   const [form, setForm] = useState({})
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const { esAdmin } = useAuth()
 
   useEffect(() => {
     cargarOrganizacion()
@@ -94,29 +96,29 @@ export default function OrganizacionDetalle() {
           </span>
         </div>
         <div className="flex gap-2">
-          {!editando && (
-            <>
+          {esAdmin() ? (
+            <button onClick={handleEliminar}
+              className="px-4 py-2 border border-red-400 text-red-500 hover:bg-red-50 rounded-lg text-sm transition">
+              Eliminar
+            </button>
+          ) : (
+            !editando ? (
               <button onClick={() => setEditando(true)}
                 className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
                 Editar
               </button>
-              <button onClick={handleEliminar}
-                className="px-4 py-2 border border-red-400 text-red-500 hover:bg-red-50 rounded-lg text-sm transition">
-                Eliminar
-              </button>
-            </>
-          )}
-          {editando && (
-            <>
-              <button onClick={() => setEditando(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
-                Cancelar
-              </button>
-              <button onClick={handleGuardar} disabled={guardando}
-                className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
-                {guardando ? 'Guardando...' : 'Guardar cambios'}
-              </button>
-            </>
+            ) : (
+              <>
+                <button onClick={() => setEditando(false)}
+                  className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
+                  Cancelar
+                </button>
+                <button onClick={handleGuardar} disabled={guardando}
+                  className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
+                  {guardando ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </>
+            )
           )}
         </div>
       </div>
