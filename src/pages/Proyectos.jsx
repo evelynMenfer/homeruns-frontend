@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import ProyectoForm from '../components/ProyectoForm'
 import api from '../api/axios'
@@ -15,6 +16,7 @@ export default function Proyectos() {
   const [proyectos, setProyectos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     cargarProyectos()
@@ -85,9 +87,11 @@ export default function Proyectos() {
                   </td>
                   <td className="px-6 py-3 text-gray-500">{p.fecha_inicio || '—'}</td>
                   <td className="px-6 py-3">
-                    <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
-                      Ver detalle
-                    </button>
+                  <button
+                    onClick={() => navigate(`/proyectos/${p.id_proyecto}`)}
+                    className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                    Ver detalle
+                  </button>
                   </td>
                 </tr>
               ))}

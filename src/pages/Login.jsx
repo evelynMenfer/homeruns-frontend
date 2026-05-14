@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -75,6 +75,12 @@ export default function Login() {
             {cargando ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
+        <p className="text-center text-sm text-gray-500 mt-6">
+          ¿Eres una organización?{' '}
+          <Link to="/registro" className="text-blue-600 hover:text-blue-800 font-medium">
+            Crear cuenta
+          </Link>
+        </p>
       </div>
     </div>
   )

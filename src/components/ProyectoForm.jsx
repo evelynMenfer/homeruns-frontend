@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 export default function ProyectoForm({ onGuardado, onCancelar }) {
+  const { usuario } = useAuth()
   const [organizaciones, setOrganizaciones] = useState([])
   const [categorias, setCategorias] = useState([])
+  const [miOrganizacion, setMiOrganizacion] = useState(null)
   const [form, setForm] = useState({
     nombre_proyecto: '',
     descripcion: '',
@@ -24,20 +27,29 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const cargarCatalogos = async () => {
-      try {
-        const [orgs, cats] = await Promise.all([
-          api.get('/organizaciones'),
-          api.get('/categorias')
-        ])
-        setOrganizaciones(orgs.data.data)
-        setCategorias(cats.data)
-      } catch (err) {
-        console.error(err)
-      }
-    }
     cargarCatalogos()
   }, [])
+
+  const cargarCatalogos = async () => {
+    try {
+      const resOrgs = await api.get('/organizaciones')
+      const listaOrgs = resOrgs.data.data || []
+      setOrganizaciones(listaOrgs)
+
+      const miOrg = listaOrgs.find(o => o.id_usuario_registro === usuario?.id_usuario)
+      if (miOrg) {
+        setMiOrganizacion(miOrg)
+        setForm(f => ({ ...f, id_organizacion: miOrg.id_organizacion }))
+        const resCats = await api.get(`/categorias?tipo_organizacion=${miOrg.tipo_organizacion}`)
+        setCategorias(resCats.data || [])
+      } else {
+        const resCats = await api.get('/categorias')
+        setCategorias(resCats.data || [])
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -49,21 +61,16 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Submit ejecutado', form, ubicacion)
-
     setCargando(true)
     setError('')
     try {
       const resUbicacion = await api.post('/ubicaciones', ubicacion)
-      const resProyecto = await api.post('/proyectos', {
+      await api.post('/proyectos', {
         ...form,
         id_ubicacion: resUbicacion.data.id_ubicacion
       })
-      console.log('Proyecto guardado:', resProyecto.data)
       onGuardado()
     } catch (err) {
-      console.error('Error completo:', err)
-      console.error('Response:', err.response)
       setError(
         err.response?.data?.message ||
         err.response?.data?.error ||
@@ -74,6 +81,7 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
       setCargando(false)
     }
   }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-screen overflow-y-auto">
@@ -89,8 +97,30 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
         )}
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        
-          {/* Datos generales */}
+
+          {/* Organización */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Organización *</label>
+            {miOrganizacion ? (
+              <div className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-700">
+                {miOrganizacion.asociacion_civil?.razon_social ||
+                 miOrganizacion.municipio?.nombre_municipio ||
+                 miOrganizacion.rfc || `Organización #${miOrganizacion.id_organizacion}`}
+              </div>
+            ) : (
+              <select name="id_organizacion" value={form.id_organizacion} onChange={handleChange} required
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Seleccionar...</option>
+                {organizaciones.map(org => (
+                  <option key={org.id_organizacion} value={org.id_organizacion}>
+                    {org.asociacion_civil?.razon_social || org.municipio?.nombre_municipio || org.rfc}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Nombre */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del proyecto *</label>
             <input name="nombre_proyecto" value={form.nombre_proyecto} onChange={handleChange} required
@@ -99,19 +129,7 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Organización *</label>
-              <select name="id_organizacion" value={form.id_organizacion} onChange={handleChange} required
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">Seleccionar...</option>
-                {organizaciones.map(org => (
-                  <option key={org.id_organizacion} value={org.id_organizacion}>
-                    {org.asociacion_civil?.razon_social || org.municipio?.nombre_municipio || org.rfc || `Org #${org.id_organizacion}`}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro principal del proyecto *</label>
               <select name="id_categoria" value={form.id_categoria} onChange={handleChange} required
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar...</option>
@@ -122,6 +140,17 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Clasificación</label>
+              <select name="clasificacion" value={form.clasificacion} onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="Primera vez">Primera vez</option>
+                <option value="Continuidad">Continuidad</option>
+                <option value="Ejecutado anteriormente">Ejecutado anteriormente</option>
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Monto solicitado</label>
               <input name="monto_solicitado" type="number" value={form.monto_solicitado} onChange={handleChange}
@@ -142,19 +171,10 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
               <input name="fecha_termino" type="date" value={form.fecha_termino} onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
-            <div>
+            <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Responsable</label>
               <input name="responsable" value={form.responsable} onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Clasificación</label>
-              <select name="clasificacion" value={form.clasificacion} onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="Primera vez">Primera vez</option>
-                <option value="Continuidad">Continuidad</option>
-                <option value="Ejecutado anteriormente">Ejecutado anteriormente</option>
-              </select>
             </div>
           </div>
 
@@ -164,7 +184,6 @@ export default function ProyectoForm({ onGuardado, onCancelar }) {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          {/* Ubicación */}
           <div className="border-t pt-4">
             <h4 className="font-medium text-gray-700 mb-3">Ubicación del proyecto</h4>
             <div className="grid grid-cols-2 gap-4">

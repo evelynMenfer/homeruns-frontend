@@ -77,8 +77,8 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Tipo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de organización</label>
-            <div className="flex gap-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de organización</label>
+            <div className="flex gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="radio" value="AC" checked={tipo === 'AC'} onChange={() => setTipo('AC')} />
                 <span className="text-sm">Asociación Civil</span>
@@ -154,6 +154,11 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
                 <textarea name="objeto_social" value={detalle.objeto_social} onChange={handleDetalle} rows={2}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Problemática</label>
+                <textarea name="problematica" value={detalle.problematica} onChange={handleDetalle} rows={2}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
             </div>
           )}
 
@@ -186,6 +191,11 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Actividad económica</label>
                 <textarea name="actividad_economica" value={detalle.actividad_economica} onChange={handleDetalle} rows={2}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Logros alcanzados</label>
+                <textarea name="logros_alcanzados" value={detalle.logros_alcanzados} onChange={handleDetalle} rows={2}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>

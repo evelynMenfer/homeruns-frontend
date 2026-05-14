@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import OrganizacionForm from '../components/OrganizacionForm'
 import api from '../api/axios'
@@ -7,6 +8,7 @@ export default function Organizaciones() {
   const [organizaciones, setOrganizaciones] = useState([])
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     cargarOrganizaciones()
@@ -73,9 +75,11 @@ export default function Organizaciones() {
                   <td className="px-6 py-3">{org.telefono || '—'}</td>
                   <td className="px-6 py-3">{org.participo_antes === 'S' ? 'Sí' : 'No'}</td>
                   <td className="px-6 py-3">
-                    <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">
-                      Ver detalle
-                    </button>
+                  <button
+                    onClick={() => navigate(`/organizaciones/${org.id_organizacion}`)}
+                    className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                    Ver detalle
+                  </button>
                   </td>
                 </tr>
               ))}

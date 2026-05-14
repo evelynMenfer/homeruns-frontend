@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const menu = [
+const menuAdmin = [
   { path: '/dashboard', label: 'Dashboard', icon: '📊' },
   { path: '/organizaciones', label: 'Organizaciones', icon: '🏢' },
   { path: '/proyectos', label: 'Proyectos', icon: '📋' },
@@ -10,8 +10,14 @@ const menu = [
   { path: '/categorias', label: 'Categorías', icon: '🏷️' },
 ]
 
+const menuOrganizacion = [
+  { path: '/mi-organizacion', label: 'Mi Organización', icon: '🏢' },
+  { path: '/mis-proyectos', label: 'Mis Proyectos', icon: '📋' },
+]
+
 export default function Sidebar() {
-  const { logout, usuario } = useAuth()
+  const { logout, usuario, esAdmin } = useAuth()
+  const menu = esAdmin() ? menuAdmin : menuOrganizacion
 
   return (
     <aside className="w-64 bg-blue-900 min-h-screen flex flex-col">
@@ -40,11 +46,13 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-blue-800">
-        <p className="text-blue-300 text-xs mb-3">{usuario?.nombre} {usuario?.apellido}</p>
+        <p className="text-blue-300 text-xs mb-1">{usuario?.nombre} {usuario?.apellido}</p>
+        <p className="text-blue-400 text-xs mb-3">
+          {esAdmin() ? 'Administrador' : 'Organización'}
+        </p>
         <button
           onClick={logout}
-          className="w-full bg-blue-800 hover:bg-blue-700 text-white text-sm py-2 rounded-lg transition"
-        >
+          className="w-full bg-blue-800 hover:bg-blue-700 text-white text-sm py-2 rounded-lg transition">
           Cerrar sesión
         </button>
       </div>
