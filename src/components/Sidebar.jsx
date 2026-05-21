@@ -7,6 +7,7 @@ const menuAdmin = [
   { path: '/proyectos', label: 'Evaluar Proyectos', icon: '✅' },
   { path: '/usuarios', label: 'Usuarios', icon: '👥' },
   { path: '/categorias', label: 'Categorías', icon: '🏷️' },
+  { path: '/reportes', label: 'Reportes', icon: '📥' },
 ]
 
 const menuOrganizacion = [
