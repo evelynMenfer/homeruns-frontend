@@ -11,6 +11,8 @@ import ProyectoDetalle from './pages/ProyectoDetalle'
 import MiOrganizacion from './pages/MiOrganizacion'
 import MisProyectos from './pages/MisProyectos'
 import Reportes from './pages/Reportes'
+import Usuarios from './pages/Usuarios'
+import Categorias from './pages/Categorias'
 
 function RutaProtegida({ children }) {
   const { token, cargando } = useAuth()
@@ -61,6 +63,14 @@ function App() {
 
           <Route path="/reportes" element={
             <RutaProtegida><Reportes /></RutaProtegida>
+          } />
+
+          <Route path="/usuarios" element={
+            <RutaProtegida><Usuarios /></RutaProtegida>
+          } />
+
+          <Route path="/categorias" element={
+            <RutaProtegida><Categorias /></RutaProtegida>
           } />
 
           <Route path="/inicio" element={

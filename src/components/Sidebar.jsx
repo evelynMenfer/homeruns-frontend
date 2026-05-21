@@ -5,9 +5,9 @@ const menuAdmin = [
   { path: '/dashboard', label: 'Dashboard', icon: '📊' },
   { path: '/organizaciones', label: 'Organizaciones', icon: '🏢' },
   { path: '/proyectos', label: 'Evaluar Proyectos', icon: '✅' },
-  { path: '/usuarios', label: 'Usuarios', icon: '👥' },
-  { path: '/categorias', label: 'Categorías', icon: '🏷️' },
   { path: '/reportes', label: 'Reportes', icon: '📥' },
+  { path: '/categorias', label: 'Categorías', icon: '🏷️' },
+  { path: '/usuarios', label: 'Usuarios', icon: '👥' },
 ]
 
 const menuOrganizacion = [
