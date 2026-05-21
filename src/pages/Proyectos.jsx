@@ -14,11 +14,14 @@ const estadoColor = {
 }
 
 export default function Proyectos() {
+  const { esAdmin } = useAuth()
+  const navigate = useNavigate()
   const [proyectos, setProyectos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
-  const navigate = useNavigate()
-  const { esAdmin } = useAuth()
+  const [busqueda, setBusqueda] = useState('')
+  const [filtroEstado, setFiltroEstado] = useState('')
+  const [filtroTipo, setFiltroTipo] = useState('')
 
   useEffect(() => {
     cargarProyectos()
@@ -35,11 +38,6 @@ export default function Proyectos() {
     }
   }
 
-  const handleGuardado = () => {
-    setMostrarForm(false)
-    cargarProyectos()
-  }
-
   const handleEliminar = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este proyecto?')) return
     try {
@@ -49,6 +47,17 @@ export default function Proyectos() {
       console.error(err)
     }
   }
+
+  const proyectosFiltrados = proyectos.filter(p => {
+    const nombre = p.nombre_proyecto?.toLowerCase() || ''
+    const org = (p.organizacion?.asociacion_civil?.razon_social ||
+                 p.organizacion?.municipio?.nombre_municipio ||
+                 p.organizacion?.rfc || '').toLowerCase()
+    const matchBusqueda = nombre.includes(busqueda.toLowerCase()) || org.includes(busqueda.toLowerCase())
+    const matchEstado = filtroEstado ? p.estado_actual === filtroEstado : true
+    const matchTipo = filtroTipo ? p.organizacion?.tipo_organizacion === filtroTipo : true
+    return matchBusqueda && matchEstado && matchTipo
+  })
 
   return (
     <Layout>
@@ -63,11 +72,37 @@ export default function Proyectos() {
         )}
       </div>
 
+      {/* Filtros */}
+      <div className="bg-white rounded-xl shadow p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input
+          type="text"
+          placeholder="Buscar por nombre u organización..."
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
+        />
+        <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+          <option value="">Todos los estados</option>
+          <option value="En revision">En revisión</option>
+          <option value="Aprobado">Aprobado</option>
+          <option value="Rechazado">Rechazado</option>
+          <option value="En ejecucion">En ejecución</option>
+          <option value="Finalizado">Finalizado</option>
+        </select>
+        <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+          <option value="">Todos los tipos</option>
+          <option value="AC">Asociación Civil</option>
+          <option value="MUNICIPIO">Municipio</option>
+        </select>
+      </div>
+
       <div className="bg-white rounded-xl shadow overflow-hidden">
         {cargando ? (
           <p className="p-6 text-gray-400">Cargando...</p>
-        ) : proyectos.length === 0 ? (
-          <p className="p-6 text-gray-400">No hay proyectos registrados.</p>
+        ) : proyectosFiltrados.length === 0 ? (
+          <p className="p-6 text-gray-400">No hay proyectos que coincidan con los filtros.</p>
         ) : (
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
@@ -81,7 +116,7 @@ export default function Proyectos() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {proyectos.map(p => (
+              {proyectosFiltrados.map(p => (
                 <tr key={p.id_proyecto} className="hover:bg-gray-50">
                   <td className="px-6 py-3 font-medium text-gray-800">{p.nombre_proyecto}</td>
                   <td className="px-6 py-3 text-gray-500">
@@ -101,19 +136,21 @@ export default function Proyectos() {
                   </td>
                   <td className="px-6 py-3 text-gray-500">{p.fecha_inicio || '—'}</td>
                   <td className="px-6 py-3">
-                  <button
-                    onClick={() => navigate(`/proyectos/${p.id_proyecto}`)}
-                    className="text-[#D94218] hover:text-blue-800 text-xs font-medium">
-                    Ver detalle
-                  </button>
-                  {esAdmin() && (
-                    <button
-                      onClick={() => handleEliminar(p.id_proyecto)}
-                      className="text-red-400 hover:text-red-600 transition"
-                      title="Eliminar proyecto">
-                      🗑️
-                    </button>
-                  )}
+                    <div className="flex gap-3 items-center">
+                      <button
+                        onClick={() => navigate(`/proyectos/${p.id_proyecto}`)}
+                        className="text-[#D94218] hover:text-[#B83510] text-xs font-medium">
+                        Ver detalle
+                      </button>
+                      {esAdmin() && (
+                        <button
+                          onClick={() => handleEliminar(p.id_proyecto)}
+                          className="text-red-400 hover:text-red-600 transition"
+                          title="Eliminar proyecto">
+                          🗑️
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -124,7 +161,7 @@ export default function Proyectos() {
 
       {mostrarForm && (
         <ProyectoForm
-          onGuardado={handleGuardado}
+          onGuardado={() => { setMostrarForm(false); cargarProyectos() }}
           onCancelar={() => setMostrarForm(false)}
         />
       )}

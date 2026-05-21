@@ -428,141 +428,118 @@ export default function ProyectoDetalle() {
             </div>
           </div>
 
-{/* Documentos */}
-<div className="bg-white rounded-xl shadow p-6">
-  <h3 className="font-semibold text-gray-700 mb-4">Documentos requeridos</h3>
-  {(() => {
-    const tipoOrg = proyecto.organizacion?.tipo_organizacion
-    const docsRequeridos = tipoOrg === 'AC' ? [
-      'INE del representante legal',
-      'Carta de donataria autorizada',
-      'CSF (Constancia de Situación Fiscal)',
-    ] : [
-      'INE del presidente municipal',
-      'INE del síndico',
-      'Constancia de acreditación del presidente',
-      'Constancia de acreditación del síndico',
-      'Comprobante de domicilio del municipio',
-    ]
-    return (
-      <div className="space-y-3">
-        {docsRequeridos.map(tipo => {
-          const docSubido = documentos.find(d => d.tipo_documento === tipo)
-          const estatus = docSubido?.estatus_validacion || 'pendiente'
-          const iconoEstatus = estatus === 'valido' ? '✅' : estatus === 'rechazado' ? '❌' : '📄'
-
-          return (
-            <div key={tipo} className="border border-gray-100 rounded-lg p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{iconoEstatus}</span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">{tipo}</p>
-                    {docSubido && (
-                      <p className="text-xs text-gray-400">{docSubido.nombre_archivo}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  {docSubido ? (
-                    <>
-                      <a href={`http://127.0.0.1:8000/storage/${docSubido.ruta_archivo}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-[#D94218] hover:text-[#B83510] font-medium">
-                        Ver
-                      </a>
-                      {!esAdmin() && (
-                        <button onClick={() => handleEliminarDocumento(docSubido.id_documento)}
-                          className="text-red-400 hover:text-red-600 text-xs" title="Eliminar">
-                          🗑️
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    !esAdmin() && (
-                      <label className="cursor-pointer text-xs text-[#D94218] hover:text-[#B83510] font-medium">
-                        {subiendoDoc === tipo ? 'Subiendo...' : 'Subir'}
-                        <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={e => {
-                            if (e.target.files[0]) handleSubirDocumento(tipo, e.target.files[0])
-                          }} />
-                      </label>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Validación admin */}
-              {esAdmin() && docSubido && (
-                <div className="border-t pt-2 space-y-2">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleValidarDocumento(docSubido.id_documento, 'valido')}
-                      className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
-                        estatus === 'valido'
-                          ? 'bg-green-500 text-white border-green-500'
-                          : 'border-green-400 text-green-600 hover:bg-green-50'
-                      }`}>
-                      ✓ Válido
-                    </button>
-                    <button
-                      onClick={() => handleValidarDocumento(docSubido.id_documento, 'rechazado')}
-                      className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
-                        estatus === 'rechazado'
-                          ? 'bg-red-500 text-white border-red-500'
-                          : 'border-red-400 text-red-500 hover:bg-red-50'
-                      }`}>
-                      ✗ Rechazar
-                    </button>
-                  </div>
-                  {estatus === 'rechazado' && (
-                    <ComentarioValidacion
-                      docId={docSubido.id_documento}
-                      comentarioInicial={docSubido.comentario_validacion || ''}
-                      onGuardar={cargarDocumentos}
-                    />
-                  )}
-                  {docSubido.comentario_validacion && estatus !== 'rechazado' && (
-                    <p className="text-xs text-gray-500 italic">{docSubido.comentario_validacion}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Mostrar comentario a la organización */}
-              {!esAdmin() && docSubido?.comentario_validacion && (
-                <p className="text-xs text-red-500 mt-1">
-                  Observación: {docSubido.comentario_validacion}
-                </p>
-              )}
-            </div>
-          )
-        })}
-      </div>
-    )
-  })()}
-</div>
-
-          {/* Historial de estados */}
+          {/* Documentos */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-4">Historial de estados</h3>
-            {proyecto.historial_estado?.length === 0 ? (
-              <p className="text-gray-400 text-sm">Sin historial.</p>
-            ) : (
-              <div className="space-y-3">
-                {proyecto.historial_estado?.map(h => (
-                  <div key={h.id_historial} className="flex items-start gap-3 text-sm">
-                    <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#D94218' }}></div>
-                    <div>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${estadoColor[h.estado] || 'bg-gray-100 text-gray-700'}`}>
-                        {h.estado}
-                      </span>
-                      <p className="text-gray-500 mt-0.5">{h.comentario}</p>
-                      <p className="text-gray-400 text-xs">{new Date(h.fecha_cambio).toLocaleString('es-MX')}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <h3 className="font-semibold text-gray-700 mb-4">Documentos requeridos</h3>
+            {(() => {
+              const tipoOrg = proyecto.organizacion?.tipo_organizacion
+              const docsRequeridos = tipoOrg === 'AC' ? [
+                'INE del representante legal',
+                'Carta de donataria autorizada',
+                'CSF (Constancia de Situación Fiscal)',
+              ] : [
+                'INE del presidente municipal',
+                'INE del síndico',
+                'Constancia de acreditación del presidente',
+                'Constancia de acreditación del síndico',
+                'Comprobante de domicilio del municipio',
+              ]
+              return (
+                <div className="space-y-3">
+                  {docsRequeridos.map(tipo => {
+                    const docSubido = documentos.find(d => d.tipo_documento === tipo)
+                    const estatus = docSubido?.estatus_validacion || 'pendiente'
+                    const iconoEstatus = estatus === 'valido' ? '✅' : estatus === 'rechazado' ? '❌' : '📄'
+
+                    return (
+                      <div key={tipo} className="border border-gray-100 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg">{iconoEstatus}</span>
+                            <div>
+                              <p className="text-sm font-medium text-gray-700">{tipo}</p>
+                              {docSubido && (
+                                <p className="text-xs text-gray-400">{docSubido.nombre_archivo}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            {docSubido ? (
+                              <>
+                                <a href={`http://127.0.0.1:8000/storage/${docSubido.ruta_archivo}`}
+                                  target="_blank" rel="noopener noreferrer"
+                                  className="text-xs text-[#D94218] hover:text-[#B83510] font-medium">
+                                  Ver
+                                </a>
+                                {!esAdmin() && (
+                                  <button onClick={() => handleEliminarDocumento(docSubido.id_documento)}
+                                    className="text-red-400 hover:text-red-600 text-xs" title="Eliminar">
+                                    🗑️
+                                  </button>
+                                )}
+                              </>
+                            ) : (
+                              !esAdmin() && (
+                                <label className="cursor-pointer text-xs text-[#D94218] hover:text-[#B83510] font-medium">
+                                  {subiendoDoc === tipo ? 'Subiendo...' : 'Subir'}
+                                  <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                                    onChange={e => {
+                                      if (e.target.files[0]) handleSubirDocumento(tipo, e.target.files[0])
+                                    }} />
+                                </label>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Validación admin */}
+                        {esAdmin() && docSubido && (
+                          <div className="border-t pt-2 space-y-2">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleValidarDocumento(docSubido.id_documento, 'valido')}
+                                className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
+                                  estatus === 'valido'
+                                    ? 'bg-green-500 text-white border-green-500'
+                                    : 'border-green-400 text-green-600 hover:bg-green-50'
+                                }`}>
+                                ✓ Válido
+                              </button>
+                              <button
+                                onClick={() => handleValidarDocumento(docSubido.id_documento, 'rechazado')}
+                                className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
+                                  estatus === 'rechazado'
+                                    ? 'bg-red-500 text-white border-red-500'
+                                    : 'border-red-400 text-red-500 hover:bg-red-50'
+                                }`}>
+                                ✗ Rechazar
+                              </button>
+                            </div>
+                            {estatus === 'rechazado' && (
+                              <ComentarioValidacion
+                                docId={docSubido.id_documento}
+                                comentarioInicial={docSubido.comentario_validacion || ''}
+                                onGuardar={cargarDocumentos}
+                              />
+                            )}
+                            {docSubido.comentario_validacion && estatus !== 'rechazado' && (
+                              <p className="text-xs text-gray-500 italic">{docSubido.comentario_validacion}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Mostrar comentario a la organización */}
+                        {!esAdmin() && docSubido?.comentario_validacion && (
+                          <p className="text-xs text-red-500 mt-1">
+                            Observación: {docSubido.comentario_validacion}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </div>
         </div>
 
@@ -579,6 +556,34 @@ export default function ProyectoDetalle() {
               {proyecto.organizacion?.tipo_organizacion === 'AC' ? 'Asociación Civil' : 'Municipio'}
             </p>
             <p className="text-xs text-gray-500">{proyecto.organizacion?.email}</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold text-gray-700 mb-3">Ubicación geográfica del proyecto</h3>
+            {editando ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Municipio</label>
+                  <input name="municipio" value={formEdit.municipio} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Estado</label>
+                  <input name="estado" value={formEdit.estado} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
+                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm">{proyecto.ubicacion?.domicilio || '—'}</p>
+                <p className="text-sm text-gray-500">{proyecto.ubicacion?.municipio}, {proyecto.ubicacion?.estado}</p>
+              </>
+            )}
           </div>
 
           {esAdmin() && (
@@ -615,33 +620,29 @@ export default function ProyectoDetalle() {
             </div>
           )}
 
+          {/* Historial de estados */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-3">Ubicación geográfica del proyecto</h3>
-            {editando ? (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Municipio</label>
-                  <input name="municipio" value={formEdit.municipio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Estado</label>
-                  <input name="estado" value={formEdit.estado} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
-                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                </div>
-              </div>
+            <h3 className="font-semibold text-gray-700 mb-4">Historial de estados</h3>
+            {proyecto.historial_estado?.length === 0 ? (
+              <p className="text-gray-400 text-sm">Sin historial.</p>
             ) : (
-              <>
-                <p className="text-sm">{proyecto.ubicacion?.domicilio || '—'}</p>
-                <p className="text-sm text-gray-500">{proyecto.ubicacion?.municipio}, {proyecto.ubicacion?.estado}</p>
-              </>
+              <div className="space-y-3">
+                {proyecto.historial_estado?.map(h => (
+                  <div key={h.id_historial} className="flex items-start gap-3 text-sm">
+                    <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#D94218' }}></div>
+                    <div>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${estadoColor[h.estado] || 'bg-gray-100 text-gray-700'}`}>
+                        {h.estado}
+                      </span>
+                      <p className="text-gray-500 mt-0.5">{h.comentario}</p>
+                      <p className="text-gray-400 text-xs">{new Date(h.fecha_cambio).toLocaleString('es-MX')}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
+
         </div>
       </div>
     </Layout>
