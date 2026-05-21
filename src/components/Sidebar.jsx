@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext'
 const menuAdmin = [
   { path: '/dashboard', label: 'Dashboard', icon: '📊' },
   { path: '/organizaciones', label: 'Organizaciones', icon: '🏢' },
-  { path: '/proyectos', label: 'Proyectos', icon: '📋' },
-  { path: '/evaluaciones', label: 'Evaluaciones', icon: '✅' },
+  { path: '/proyectos', label: 'Evaluar Proyectos', icon: '✅' },
   { path: '/usuarios', label: 'Usuarios', icon: '👥' },
   { path: '/categorias', label: 'Categorías', icon: '🏷️' },
 ]

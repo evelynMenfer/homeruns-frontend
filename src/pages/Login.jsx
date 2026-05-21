@@ -41,7 +41,7 @@
             <p className="text-lg mb-2" style={{ color: '#9CA3AF' }}>Fundación Alfredo Harp Helú Oaxaca | Fomento Social Banamex</p>
             <p className="text-sm" style={{ color: '#6B7280' }}>Convocatoria 2026</p>
             <div className="mt-10 space-y-3">
-              {['Fecha límite de recepción: 15 Mayo 2026', 'i tienes dudas escribenos a: homeruns@fahho.mx'].map(item => (
+              {['Fecha límite de recepción: 15 Mayo 2026', 'Si tienes dudas escribenos a: homeruns@fahho.mx'].map(item => (
                 <div key={item} className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full" style={{ background: '#D94218' }}></div>
                   <p className="text-sm text-gray-400">{item}</p>

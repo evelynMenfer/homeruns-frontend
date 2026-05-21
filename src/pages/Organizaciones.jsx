@@ -32,6 +32,16 @@ export default function Organizaciones() {
     cargarOrganizaciones()
   }
 
+  const handleEliminar = async (id) => {
+    if (!confirm('¿Estás seguro de eliminar esta organización?')) return
+    try {
+      await api.delete(`/organizaciones/${id}`)
+      cargarOrganizaciones()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
@@ -54,7 +64,7 @@ export default function Organizaciones() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-6 py-3 text-gray-600 font-medium">RFC</th>
+                <th className="text-left px-6 py-3 text-gray-600 font-medium">Nombre</th>
                 <th className="text-left px-6 py-3 text-gray-600 font-medium">Tipo</th>
                 <th className="text-left px-6 py-3 text-gray-600 font-medium">Email</th>
                 <th className="text-left px-6 py-3 text-gray-600 font-medium">Teléfono</th>
@@ -65,7 +75,9 @@ export default function Organizaciones() {
             <tbody className="divide-y divide-gray-100">
               {organizaciones.map(org => (
                 <tr key={org.id_organizacion} className="hover:bg-gray-50">
-                  <td className="px-6 py-3">{org.rfc || '—'}</td>
+                <td className="px-6 py-3 font-medium">
+                  {org.asociacion_civil?.razon_social || org.municipio?.nombre_municipio || org.rfc || '—'}
+                </td>
                   <td className="px-6 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       org.tipo_organizacion === 'AC'
@@ -84,6 +96,14 @@ export default function Organizaciones() {
                     className="text-[#D94218] hover:text-blue-800 text-xs font-medium">
                     Ver detalle
                   </button>
+                  {esAdmin() && (
+                    <button
+                      onClick={() => handleEliminar(org.id_organizacion)}
+                      className="text-red-400 hover:text-red-600 transition"
+                      title="Eliminar organización">
+                      🗑️
+                    </button>
+                  )}
                   </td>
                 </tr>
               ))}

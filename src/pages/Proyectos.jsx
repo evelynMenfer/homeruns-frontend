@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import ProyectoForm from '../components/ProyectoForm'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 const estadoColor = {
   'En revision': 'bg-yellow-100 text-yellow-700',
@@ -17,6 +18,7 @@ export default function Proyectos() {
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
   const navigate = useNavigate()
+  const { esAdmin } = useAuth()
 
   useEffect(() => {
     cargarProyectos()
@@ -38,15 +40,27 @@ export default function Proyectos() {
     cargarProyectos()
   }
 
+  const handleEliminar = async (id) => {
+    if (!confirm('¿Estás seguro de eliminar este proyecto?')) return
+    try {
+      await api.delete(`/proyectos/${id}`)
+      cargarProyectos()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
     <Layout>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Proyectos</h2>
-        <button
-          onClick={() => setMostrarForm(true)}
-          className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
-          + Nuevo proyecto
-        </button>
+        {!esAdmin() && (
+          <button
+            onClick={() => setMostrarForm(true)}
+            className="bg-[#D94218] hover:bg-[#B83510] text-white px-4 py-2 rounded-lg text-sm transition">
+            + Nuevo proyecto
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow overflow-hidden">
@@ -92,6 +106,14 @@ export default function Proyectos() {
                     className="text-[#D94218] hover:text-blue-800 text-xs font-medium">
                     Ver detalle
                   </button>
+                  {esAdmin() && (
+                    <button
+                      onClick={() => handleEliminar(p.id_proyecto)}
+                      className="text-red-400 hover:text-red-600 transition"
+                      title="Eliminar proyecto">
+                      🗑️
+                    </button>
+                  )}
                   </td>
                 </tr>
               ))}

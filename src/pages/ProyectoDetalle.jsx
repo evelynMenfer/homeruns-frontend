@@ -44,10 +44,13 @@ export default function ProyectoDetalle() {
     beneficiarios_indirectos: 0, indicadores: '',
     total_beneficiarios: 0
   })
+  const [documentos, setDocumentos] = useState([])
+  const [subiendoDoc, setSubiendoDoc] = useState(null)
 
   useEffect(() => {
     cargarProyecto()
     cargarBeneficiarios()
+    cargarDocumentos()
   }, [id])
 
   const cargarProyecto = async () => {
@@ -80,6 +83,43 @@ export default function ProyectoDetalle() {
     try {
       const res = await api.get(`/proyectos/${id}/beneficiarios`)
       if (res.data) setBeneficiarios(res.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const cargarDocumentos = async () => {
+    try {
+      const res = await api.get(`/documentos?id_proyecto=${id}`)
+      setDocumentos(res.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+  
+  const handleSubirDocumento = async (tipoDocumento, archivo) => {
+    setSubiendoDoc(tipoDocumento)
+    try {
+      const formData = new FormData()
+      formData.append('id_proyecto', id)
+      formData.append('tipo_documento', tipoDocumento)
+      formData.append('archivo', archivo)
+      await api.post('/documentos', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      cargarDocumentos()
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setSubiendoDoc(null)
+    }
+  }
+  
+  const handleEliminarDocumento = async (idDoc) => {
+    if (!confirm('¿Eliminar este documento?')) return
+    try {
+      await api.delete(`/documentos/${idDoc}`)
+      cargarDocumentos()
     } catch (err) {
       console.error(err)
     }
@@ -143,6 +183,53 @@ export default function ProyectoDetalle() {
       (Number(updated.beneficiarios_6064m) || 0) + (Number(updated.beneficiarios_6064h) || 0) +
       (Number(updated.beneficiarios_65m) || 0) + (Number(updated.beneficiarios_65h) || 0)
     setBeneficiarios(updated)
+  }
+
+  const handleValidarDocumento = async (idDoc, estatus) => {
+    try {
+      await api.patch(`/documentos/${idDoc}/validar`, {
+        estatus_validacion: estatus
+      })
+      cargarDocumentos()
+    } catch (err) {
+      console.error(err)
+    }
+  }
+  
+  function ComentarioValidacion({ docId, comentarioInicial, onGuardar }) {
+    const [comentario, setComentario] = useState(comentarioInicial)
+    const [guardando, setGuardando] = useState(false)
+  
+    const guardar = async () => {
+      setGuardando(true)
+      try {
+        await api.patch(`/documentos/${docId}/validar`, {
+          estatus_validacion: 'rechazado',
+          comentario_validacion: comentario
+        })
+        onGuardar()
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setGuardando(false)
+      }
+    }
+  
+    return (
+      <div className="space-y-1">
+        <textarea
+          value={comentario}
+          onChange={e => setComentario(e.target.value)}
+          placeholder="Motivo del rechazo..."
+          rows={2}
+          className="w-full border border-red-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-red-400"
+        />
+        <button onClick={guardar} disabled={guardando}
+          className="w-full text-xs py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50">
+          {guardando ? 'Guardando...' : 'Guardar comentario'}
+        </button>
+      </div>
+    )
   }
 
   if (cargando) return <Layout><p className="text-gray-400">Cargando...</p></Layout>
@@ -341,6 +428,120 @@ export default function ProyectoDetalle() {
             </div>
           </div>
 
+{/* Documentos */}
+<div className="bg-white rounded-xl shadow p-6">
+  <h3 className="font-semibold text-gray-700 mb-4">Documentos requeridos</h3>
+  {(() => {
+    const tipoOrg = proyecto.organizacion?.tipo_organizacion
+    const docsRequeridos = tipoOrg === 'AC' ? [
+      'INE del representante legal',
+      'Carta de donataria autorizada',
+      'CSF (Constancia de Situación Fiscal)',
+    ] : [
+      'INE del presidente municipal',
+      'INE del síndico',
+      'Constancia de acreditación del presidente',
+      'Constancia de acreditación del síndico',
+      'Comprobante de domicilio del municipio',
+    ]
+    return (
+      <div className="space-y-3">
+        {docsRequeridos.map(tipo => {
+          const docSubido = documentos.find(d => d.tipo_documento === tipo)
+          const estatus = docSubido?.estatus_validacion || 'pendiente'
+          const iconoEstatus = estatus === 'valido' ? '✅' : estatus === 'rechazado' ? '❌' : '📄'
+
+          return (
+            <div key={tipo} className="border border-gray-100 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{iconoEstatus}</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">{tipo}</p>
+                    {docSubido && (
+                      <p className="text-xs text-gray-400">{docSubido.nombre_archivo}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {docSubido ? (
+                    <>
+                      <a href={`http://127.0.0.1:8000/storage/${docSubido.ruta_archivo}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-[#D94218] hover:text-[#B83510] font-medium">
+                        Ver
+                      </a>
+                      {!esAdmin() && (
+                        <button onClick={() => handleEliminarDocumento(docSubido.id_documento)}
+                          className="text-red-400 hover:text-red-600 text-xs" title="Eliminar">
+                          🗑️
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    !esAdmin() && (
+                      <label className="cursor-pointer text-xs text-[#D94218] hover:text-[#B83510] font-medium">
+                        {subiendoDoc === tipo ? 'Subiendo...' : 'Subir'}
+                        <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png"
+                          onChange={e => {
+                            if (e.target.files[0]) handleSubirDocumento(tipo, e.target.files[0])
+                          }} />
+                      </label>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* Validación admin */}
+              {esAdmin() && docSubido && (
+                <div className="border-t pt-2 space-y-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleValidarDocumento(docSubido.id_documento, 'valido')}
+                      className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
+                        estatus === 'valido'
+                          ? 'bg-green-500 text-white border-green-500'
+                          : 'border-green-400 text-green-600 hover:bg-green-50'
+                      }`}>
+                      ✓ Válido
+                    </button>
+                    <button
+                      onClick={() => handleValidarDocumento(docSubido.id_documento, 'rechazado')}
+                      className={`flex-1 text-xs py-1.5 rounded-lg border transition ${
+                        estatus === 'rechazado'
+                          ? 'bg-red-500 text-white border-red-500'
+                          : 'border-red-400 text-red-500 hover:bg-red-50'
+                      }`}>
+                      ✗ Rechazar
+                    </button>
+                  </div>
+                  {estatus === 'rechazado' && (
+                    <ComentarioValidacion
+                      docId={docSubido.id_documento}
+                      comentarioInicial={docSubido.comentario_validacion || ''}
+                      onGuardar={cargarDocumentos}
+                    />
+                  )}
+                  {docSubido.comentario_validacion && estatus !== 'rechazado' && (
+                    <p className="text-xs text-gray-500 italic">{docSubido.comentario_validacion}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Mostrar comentario a la organización */}
+              {!esAdmin() && docSubido?.comentario_validacion && (
+                <p className="text-xs text-red-500 mt-1">
+                  Observación: {docSubido.comentario_validacion}
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
+  })()}
+</div>
+
           {/* Historial de estados */}
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold text-gray-700 mb-4">Historial de estados</h3>
@@ -382,7 +583,7 @@ export default function ProyectoDetalle() {
 
           {esAdmin() && (
             <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="font-semibold text-gray-700 mb-3">Cambiar estado</h3>
+              <h3 className="font-semibold text-gray-700 mb-3">Evaluar proyecto</h3>
               {!cambiandoEstado ? (
                 <button onClick={() => setCambiandoEstado(true)}
                   className="w-full border border-[#D94218] text-[#D94218] hover:bg-orange-50 py-2 rounded-lg text-sm transition">
