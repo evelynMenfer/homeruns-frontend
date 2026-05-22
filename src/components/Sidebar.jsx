@@ -8,6 +8,7 @@ const menuAdmin = [
   { path: '/reportes', label: 'Reportes', icon: '📥' },
   { path: '/categorias', label: 'Categorías', icon: '🏷️' },
   { path: '/usuarios', label: 'Usuarios', icon: '👥' },
+  { path: '/configuracion', label: 'Configuración', icon: '⚙️' },
 ]
 
 const menuOrganizacion = [

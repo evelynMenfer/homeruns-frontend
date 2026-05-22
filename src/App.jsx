@@ -13,6 +13,7 @@ import MisProyectos from './pages/MisProyectos'
 import Reportes from './pages/Reportes'
 import Usuarios from './pages/Usuarios'
 import Categorias from './pages/Categorias'
+import Configuracion from './pages/Configuracion'
 
 function RutaProtegida({ children }) {
   const { token, cargando } = useAuth()
@@ -73,6 +74,9 @@ function App() {
             <RutaProtegida><Categorias /></RutaProtegida>
           } />
 
+          <Route path="/configuracion" element={
+            <RutaProtegida><Configuracion /></RutaProtegida>
+          } />
           <Route path="/inicio" element={
             <RutaProtegida><DashboardOrganizacion /></RutaProtegida>
           } />
