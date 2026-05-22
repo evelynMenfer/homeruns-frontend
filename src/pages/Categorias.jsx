@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import api from '../api/axios'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 export default function Categorias() {
   const [categorias, setCategorias] = useState([])
@@ -13,6 +15,7 @@ export default function Categorias() {
   const [guardando, setGuardando] = useState(false)
   const [busqueda, setBusqueda] = useState('')
   const [filtroTipo, setFiltroTipo] = useState('')
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarCategorias()
@@ -42,8 +45,10 @@ export default function Categorias() {
       setMostrarForm(false)
       setForm({ nombre_categoria: '', tipo_organizacion: 'AMBOS' })
       cargarCategorias()
+      mostrar('Categoría creada correctamente')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
+      mostrar('Error al crear la categoría', 'error')
     } finally {
       setGuardando(false)
     }
@@ -59,8 +64,9 @@ export default function Categorias() {
       await api.put(`/categorias/${id}`, formEdit)
       setEditando(null)
       cargarCategorias()
+      mostrar('Categoría actualizada correctamente')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al actualizar la categoría', 'error')
     }
   }
 
@@ -69,8 +75,9 @@ export default function Categorias() {
     try {
       await api.delete(`/categorias/${id}`)
       cargarCategorias()
+      mostrar('Categoría eliminada correctamente')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al eliminar la categoría', 'error')
     }
   }
 
@@ -232,6 +239,7 @@ export default function Categorias() {
           </div>
         </div>
       )}
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
 }

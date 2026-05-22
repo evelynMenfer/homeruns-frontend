@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../api/axios'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 export default function Registro() {
   const [form, setForm] = useState({
@@ -9,6 +11,7 @@ export default function Registro() {
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
   const navigate = useNavigate()
+  const { toast, mostrar, cerrar } = useToast()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -32,9 +35,11 @@ export default function Registro() {
       })
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario))
-      navigate('/mi-organizacion')
+      mostrar('Cuenta creada correctamente. Bienvenido a Home Runs.')
+      setTimeout(() => navigate('/mi-organizacion'), 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrarse')
+      mostrar('Error al crear la cuenta', 'error')
     } finally {
       setCargando(false)
     }
@@ -115,6 +120,7 @@ export default function Registro() {
           </Link>
         </p>
       </div>
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </div>
   )
 }

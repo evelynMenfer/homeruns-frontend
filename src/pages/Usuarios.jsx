@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import api from '../api/axios'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([])
@@ -16,6 +18,7 @@ export default function Usuarios() {
   const [guardando, setGuardando] = useState(false)
   const [editando, setEditando] = useState(null)
   const [formEdit, setFormEdit] = useState({})
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarUsuarios()
@@ -45,8 +48,10 @@ export default function Usuarios() {
       setMostrarForm(false)
       setForm({ nombre: '', apellido: '', email: '', password: '', telefono: '', estatus: 'activo', roles: [1] })
       cargarUsuarios()
+      mostrar('Usuario creado correctamente')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
+      mostrar('Error al crear el usuario', 'error')
     } finally {
       setGuardando(false)
     }
@@ -58,8 +63,9 @@ export default function Usuarios() {
     try {
       await api.put(`/usuarios/${usuario.id_usuario}`, { estatus: nuevoEstatus })
       cargarUsuarios()
+      mostrar(`Usuario ${nuevoEstatus === 'activo' ? 'activado' : 'desactivado'} correctamente`)
     } catch (err) {
-      console.error(err)
+      mostrar('Error al actualizar el estatus', 'error')
     }
   }
 
@@ -68,8 +74,9 @@ export default function Usuarios() {
     try {
       await api.delete(`/usuarios/${id}`)
       cargarUsuarios()
+      mostrar('Usuario eliminado correctamente')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al eliminar el usuario', 'error')
     }
   }
 
@@ -94,16 +101,17 @@ export default function Usuarios() {
   }
   
   const handleGuardarEdit = async (id) => {
-    try {
-      const data = { ...formEdit }
-      if (!data.password) delete data.password
-      await api.put(`/usuarios/${id}`, data)
-      setEditando(null)
-      cargarUsuarios()
-    } catch (err) {
-      console.error(err)
-    }
+  try {
+    const data = { ...formEdit }
+    if (!data.password) delete data.password
+    await api.put(`/usuarios/${id}`, data)
+    setEditando(null)
+    cargarUsuarios()
+    mostrar('Usuario actualizado correctamente')
+  } catch (err) {
+    mostrar('Error al actualizar el usuario', 'error')
   }
+}
 
   return (
     <Layout>
@@ -314,6 +322,9 @@ export default function Usuarios() {
           </div>
         </div>
       )}
+
+        {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
+
     </Layout>
   )
 }

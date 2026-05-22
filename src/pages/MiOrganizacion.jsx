@@ -3,6 +3,8 @@ import Layout from '../components/Layout'
 import OrganizacionForm from '../components/OrganizacionForm'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 export default function MiOrganizacion() {
   const { usuario } = useAuth()
@@ -13,6 +15,7 @@ export default function MiOrganizacion() {
   const [form, setForm] = useState({})
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarMiOrganizacion()
@@ -57,8 +60,10 @@ export default function MiOrganizacion() {
       await api.put(`/organizaciones/${organizacion.id_organizacion}`, form)
       setEditando(false)
       cargarMiOrganizacion()
+      mostrar('Información actualizada correctamente')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
+      mostrar('Error al guardar los cambios', 'error')
     } finally {
       setGuardando(false)
     }
@@ -84,6 +89,7 @@ export default function MiOrganizacion() {
             onCancelar={() => setMostrarForm(false)}
           />
         )}
+        {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
       </Layout>
     )
   }
@@ -232,6 +238,7 @@ export default function MiOrganizacion() {
         </div>
 
       </div>
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
 }

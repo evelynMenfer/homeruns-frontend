@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import api from '../api/axios'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 const estadoColor = {
   'En revision': 'bg-yellow-100 text-yellow-700',
@@ -46,11 +48,14 @@ export default function ProyectoDetalle() {
   })
   const [documentos, setDocumentos] = useState([])
   const [subiendoDoc, setSubiendoDoc] = useState(null)
+  const [categorias, setCategorias] = useState([])
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarProyecto()
     cargarBeneficiarios()
     cargarDocumentos()
+    cargarCategorias()
   }, [id])
 
   const cargarProyecto = async () => {
@@ -71,6 +76,7 @@ export default function ProyectoDetalle() {
         estado: res.data.ubicacion?.estado || '',
         domicilio: res.data.ubicacion?.domicilio || '',
         aplicacion: res.data.ubicacion?.aplicacion || '',
+        id_categoria: res.data.id_categoria || '',
       })
     } catch (err) {
       console.error(err)
@@ -96,6 +102,15 @@ export default function ProyectoDetalle() {
       console.error(err)
     }
   }
+
+  const cargarCategorias = async () => {
+    try {
+      const res = await api.get(`/categorias?tipo_organizacion=${proyecto?.organizacion?.tipo_organizacion || 'AMBOS'}`)
+      setCategorias(res.data || [])
+    } catch (err) {
+      console.error(err)
+    }
+  }
   
   const handleSubirDocumento = async (tipoDocumento, archivo) => {
     setSubiendoDoc(tipoDocumento)
@@ -108,8 +123,9 @@ export default function ProyectoDetalle() {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       cargarDocumentos()
+      mostrar('Documento subido correctamente')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al subir el documento', 'error')
     } finally {
       setSubiendoDoc(null)
     }
@@ -120,8 +136,9 @@ export default function ProyectoDetalle() {
     try {
       await api.delete(`/documentos/${idDoc}`)
       cargarDocumentos()
+      mostrar('Documento eliminado')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al eliminar el documento', 'error')
     }
   }
 
@@ -132,8 +149,9 @@ export default function ProyectoDetalle() {
       setComentario('')
       setCambiandoEstado(false)
       cargarProyecto()
+      mostrar(`Estado cambiado a: ${nuevoEstado}`)
     } catch (err) {
-      console.error(err)
+      mostrar('Error al cambiar el estado', 'error')
     } finally {
       setGuardando(false)
     }
@@ -157,18 +175,20 @@ export default function ProyectoDetalle() {
         fecha_inicio: formEdit.fecha_inicio,
         fecha_termino: formEdit.fecha_termino,
         clasificacion: formEdit.clasificacion,
+        id_categoria: formEdit.id_categoria,
       })
       await api.post(`/proyectos/${id}/beneficiarios`, beneficiarios)
       setEditando(false)
       cargarProyecto()
       cargarBeneficiarios()
+      mostrar('Proyecto actualizado correctamente')
     } catch (err) {
+      mostrar('Error al guardar los cambios', 'error')
       console.error(err)
     } finally {
       setGuardandoEdit(false)
     }
   }
-
   const handleChange = (e) => {
     setFormEdit({ ...formEdit, [e.target.name]: e.target.value })
   }
@@ -187,12 +207,11 @@ export default function ProyectoDetalle() {
 
   const handleValidarDocumento = async (idDoc, estatus) => {
     try {
-      await api.patch(`/documentos/${idDoc}/validar`, {
-        estatus_validacion: estatus
-      })
+      await api.patch(`/documentos/${idDoc}/validar`, { estatus_validacion: estatus })
       cargarDocumentos()
+      mostrar(estatus === 'valido' ? 'Documento validado correctamente' : 'Documento rechazado')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al validar el documento', 'error')
     }
   }
   
@@ -283,9 +302,16 @@ export default function ProyectoDetalle() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Responsable</label>
-                    <input name="responsable" value={formEdit.responsable} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    <label className="block text-xs text-gray-500 mb-1">Rubro principal del proyecto</label>
+                    <select name="id_categoria" value={formEdit.id_categoria || ''} onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+                      <option value="">Seleccionar...</option>
+                      {categorias.map(cat => (
+                        <option key={cat.id_categoria} value={cat.id_categoria}>
+                          {cat.nombre_categoria}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Clasificación</label>
@@ -318,6 +344,11 @@ export default function ProyectoDetalle() {
                   </div>
                 </div>
                 <div>
+                  <label className="block text-xs text-gray-500 mb-1">Responsable</label>
+                  <input name="responsable" value={formEdit.responsable} onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                </div>
+                <div>
                   <label className="block text-xs text-gray-500 mb-1">Objeto, metas y alcance del proyecto</label>
                   <textarea name="descripcion" value={formEdit.descripcion} onChange={handleChange} rows={3}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
@@ -330,7 +361,10 @@ export default function ProyectoDetalle() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div><p className="text-gray-500">Responsable</p><p className="font-medium">{proyecto.responsable || '—'}</p></div>
+                <div>
+                  <p className="text-gray-500">Rubro principal del proyecto</p>
+                  <p className="font-medium">{proyecto.categoria?.nombre_categoria || '—'}</p>
+                </div>
                 <div><p className="text-gray-500">Clasificación</p><p className="font-medium">{proyecto.clasificacion || '—'}</p></div>
                 <div>
                   <p className="text-gray-500">Monto solicitado</p>
@@ -342,6 +376,7 @@ export default function ProyectoDetalle() {
                 </div>
                 <div><p className="text-gray-500">Fecha inicio</p><p className="font-medium">{proyecto.fecha_inicio || '—'}</p></div>
                 <div><p className="text-gray-500">Fecha término</p><p className="font-medium">{proyecto.fecha_termino || '—'}</p></div>
+                <div><p className="text-gray-500">Responsable</p><p className="font-medium">{proyecto.responsable || '—'}</p></div>
                 <div className="col-span-2">
                   <p className="text-gray-500">Objeto, metas y alcance del proyecto</p>
                   <p className="mt-1">{proyecto.descripcion || '—'}</p>
@@ -645,6 +680,7 @@ export default function ProyectoDetalle() {
 
         </div>
       </div>
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
 }

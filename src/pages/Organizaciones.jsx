@@ -4,6 +4,8 @@ import Layout from '../components/Layout'
 import OrganizacionForm from '../components/OrganizacionForm'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 export default function Organizaciones() {
   const { esAdmin } = useAuth()
@@ -14,6 +16,7 @@ export default function Organizaciones() {
   const [busqueda, setBusqueda] = useState('')
   const [filtroTipo, setFiltroTipo] = useState('')
   const [filtroParticipo, setFiltroParticipo] = useState('')
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarOrganizaciones()
@@ -33,6 +36,7 @@ export default function Organizaciones() {
   const handleGuardado = () => {
     setMostrarForm(false)
     cargarOrganizaciones()
+    mostrar('Organización guardada correctamente')
   }
 
   const handleEliminar = async (id) => {
@@ -40,8 +44,9 @@ export default function Organizaciones() {
     try {
       await api.delete(`/organizaciones/${id}`)
       cargarOrganizaciones()
+      mostrar('Organización eliminada')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al eliminar la organización', 'error')
     }
   }
 
@@ -157,6 +162,8 @@ export default function Organizaciones() {
           onCancelar={() => setMostrarForm(false)}
         />
       )}
+
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
 }

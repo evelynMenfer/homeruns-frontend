@@ -4,6 +4,8 @@ import Layout from '../components/Layout'
 import ProyectoForm from '../components/ProyectoForm'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import Toast from '../components/Toast'
+import useToast from '../hooks/useToast'
 
 const estadoColor = {
   'En revision': 'bg-yellow-100 text-yellow-700',
@@ -19,6 +21,7 @@ export default function MisProyectos() {
   const [proyectos, setProyectos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [mostrarForm, setMostrarForm] = useState(false)
+  const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
     cargarMisProyectos()
@@ -39,12 +42,13 @@ export default function MisProyectos() {
   }
 
   const handleEliminar = async (id) => {
-    if (!confirm('¿Estás segura de eliminar este proyecto?')) return
+    if (!confirm('¿Estás seguro de eliminar este proyecto?')) return
     try {
       await api.delete(`/proyectos/${id}`)
       cargarMisProyectos()
+      mostrar('Proyecto eliminado correctamente')
     } catch (err) {
-      console.error(err)
+      mostrar('Error al eliminar el proyecto', 'error')
     }
   }
 
@@ -117,10 +121,11 @@ export default function MisProyectos() {
 
       {mostrarForm && (
         <ProyectoForm
-          onGuardado={() => { setMostrarForm(false); cargarMisProyectos() }}
+        onGuardado={() => { setMostrarForm(false); cargarMisProyectos(); mostrar('Proyecto registrado correctamente') }}
           onCancelar={() => setMostrarForm(false)}
         />
       )}
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
 }
