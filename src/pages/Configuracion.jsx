@@ -147,7 +147,7 @@ export default function Configuracion() {
 
         {/* Textos */}
         <div className="bg-white rounded-xl shadow p-6 space-y-4">
-          <h3 className="font-semibold text-gray-700 mb-2">Textos de bienvenida</h3>
+          <h3 className="font-semibold text-gray-700 mb-2">Información adicional</h3>
 
           <div>
             <label className="block text-xs text-gray-500 mb-1">Texto de bienvenida</label>
@@ -157,7 +157,7 @@ export default function Configuracion() {
           </div>
 
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Aviso / Información adicional</label>
+            <label className="block text-xs text-gray-500 mb-1">Aviso</label>
             <textarea name="aviso" value={form.aviso} onChange={handleChange}
               rows={8}
               placeholder="Escribe el aviso con bullets usando • al inicio de cada línea"

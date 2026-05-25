@@ -36,7 +36,8 @@ export default function DashboardOrganizacion() {
               </div>
             )}
             <h1 className="text-3xl font-bold uppercase tracking-wide">
-              Registro {config?.nombre_programa || 'Home Runs'} {config?.anio_convocatoria || '2026'}
+              Registro Home Runs {config?.anio_convocatoria || '2026'}
+              {/*Registro {config?.nombre_programa || 'Home Runs'} {config?.anio_convocatoria || '2026'}*/}
             </h1>
           </div>
 
@@ -51,7 +52,7 @@ export default function DashboardOrganizacion() {
           <div className="bg-white rounded-xl shadow p-6">
             <div className="flex items-start gap-3">
               <span className="text-xl">ℹ️</span>
-              <div>
+              <div> 
                 <h3 className="font-semibold text-gray-800 mb-2">Importante</h3>
                 <div className="text-sm text-gray-600 whitespace-pre-line">
                   {config?.aviso}

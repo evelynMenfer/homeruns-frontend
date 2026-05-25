@@ -58,15 +58,23 @@ export default function Login() {
             Convocatoria {config?.anio_convocatoria || '2026'}
           </p>
           <div className="mt-10 space-y-3">
-            {[
-              `Fecha límite de recepción: ${config?.fecha_limite || '15 Mayo 2026'}`,
-              `Si tienes dudas escríbenos a: ${config?.email_contacto || 'homeruns@fahho.mx'}`
-            ].map(item => (
-              <div key={item} className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full" style={{ background: '#D94218' }}></div>
-                <p className="text-sm text-gray-400">{item}</p>
-              </div>
-            ))}
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full" style={{ background: '#D94218' }}></div>
+              <p className="text-sm text-gray-400">
+                Fecha límite de recepción: {config?.fecha_limite || '15 Mayo 2026'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full" style={{ background: '#D94218' }}></div>
+              <p className="text-sm text-gray-400">
+                Si tienes dudas escríbenos a:{' '}
+                <a href={`mailto:${config?.email_contacto || 'homeruns@fahho.mx'}`}
+                  className="font-medium underline"
+                  style={{ color: '#D94218' }}>
+                  {config?.email_contacto || 'homeruns@fahho.mx'}
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
