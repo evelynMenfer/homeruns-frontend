@@ -501,8 +501,12 @@ export default function ProyectoDetalle() {
                           <div className="flex gap-2 items-center">
                             {docSubido ? (
                               <>
-                                <a href={`http://127.0.0.1:8000/storage/${docSubido.ruta_archivo}`}
-                                  target="_blank" rel="noopener noreferrer"
+                                <a href="#"
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    const res = await api.get(`/documentos/${docSubido.id_documento}`);
+                                    window.open(res.data.url, '_blank');
+                                  }}
                                   className="text-xs text-[#D94218] hover:text-[#B83510] font-medium">
                                   Ver
                                 </a>
