@@ -10,6 +10,7 @@ export default function Registro() {
   })
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
+  const [aceptaTerminos, setAceptaTerminos] = useState(false)
   const navigate = useNavigate()
   const { toast, mostrar, cerrar } = useToast()
 
@@ -21,6 +22,10 @@ export default function Registro() {
     e.preventDefault()
     if (form.password !== form.confirmar_password) {
       setError('Las contraseñas no coinciden')
+      return
+    }
+    if (!aceptaTerminos) {
+      setError('Debes aceptar los términos y condiciones para continuar')
       return
     }
     setCargando(true)
@@ -104,11 +109,34 @@ export default function Registro() {
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2" />
           </div>
 
-          <button type="submit" disabled={cargando}
+          {/* Términos y condiciones */}
+          <div className="flex items-start gap-3 pt-1">
+            <input
+              type="checkbox"
+              id="terminos"
+              checked={aceptaTerminos}
+              onChange={(e) => setAceptaTerminos(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 cursor-pointer"
+              style={{ accentColor: '#D94218' }}
+            />
+            <label htmlFor="terminos" className="text-sm text-gray-600 cursor-pointer leading-snug">
+              He leído y acepto el{' '}
+              <a href="https://fahho.mx/aviso-de-privacidad/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium underline"
+                style={{ color: '#D94218' }}>
+                Aviso de Privacidad
+              </a>{' '}
+              de la Fundación Alfredo Harp Helú Oaxaca.
+            </label>
+          </div>
+
+          <button type="submit" disabled={cargando || !aceptaTerminos}
             className="w-full text-white font-semibold py-2.5 rounded-lg transition disabled:opacity-50 mt-2"
-            style={{ background: '#D94218' }}
-            onMouseEnter={e => !cargando && (e.target.style.background = '#B83510')}
-            onMouseLeave={e => !cargando && (e.target.style.background = '#D94218')}>
+            style={{ background: aceptaTerminos ? '#D94218' : '#9CA3AF' }}
+            onMouseEnter={e => (!cargando && aceptaTerminos) && (e.target.style.background = '#B83510')}
+            onMouseLeave={e => (!cargando && aceptaTerminos) && (e.target.style.background = '#D94218')}>
             {cargando ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
