@@ -13,6 +13,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
     nombre_municipio: '', nombre_presidente: '', nombre_sindicato: '',
     periodo_gestion: '', actividad_economica: '', logros_alcanzados: ''
   })
+  const [cartaIntencion, setCartaIntencion] = useState(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
@@ -26,9 +27,16 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!cartaIntencion) {
+      setError('La carta de intención es obligatoria para registrar la organización')
+      return
+    }
+
     setCargando(true)
     setError('')
     try {
+      // 1. Guardar la organización
       const payload = {
         ...form,
         tipo_organizacion: tipo,
@@ -51,7 +59,20 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
           logros_alcanzados: detalle.logros_alcanzados,
         }})
       }
-      await api.post('/organizaciones', payload)
+      const resOrg = await api.post('/organizaciones', payload)
+      const idProyecto = resOrg.data?.proyecto?.id_proyecto
+
+      // 2. Subir carta de intención si se obtuvo el id_proyecto
+      if (idProyecto && cartaIntencion) {
+        const formData = new FormData()
+        formData.append('archivo', cartaIntencion)
+        formData.append('tipo_documento', 'carta_intencion')
+        formData.append('id_proyecto', idProyecto)
+        await api.post('/documentos', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      }
+
       onGuardado()
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
@@ -201,13 +222,31 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
             </div>
           )}
 
+          {/* Carta de intención */}
+          <div className="border-t pt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Carta de intención <span className="text-red-500">*</span>
+            </label>
+            <p className="text-xs text-gray-500 mb-2">Sube tu carta de intención en formato PDF, JPG o PNG (máx. 10MB)</p>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={(e) => setCartaIntencion(e.target.files[0])}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218] file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#D94218] file:text-white hover:file:bg-[#B83510] cursor-pointer"
+            />
+            {cartaIntencion && (
+              <p className="text-xs text-green-600 mt-1">✅ {cartaIntencion.name}</p>
+            )}
+          </div>
+
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button type="button" onClick={onCancelar}
               className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
               Cancelar
             </button>
-            <button type="submit" disabled={cargando}
-              className="px-4 py-2 bg-[#D94218] hover:bg-[#B83510] text-white rounded-lg text-sm transition disabled:opacity-50">
+            <button type="submit" disabled={cargando || !cartaIntencion}
+              className="px-4 py-2 text-white rounded-lg text-sm transition disabled:opacity-50"
+              style={{ background: cartaIntencion ? '#D94218' : '#9CA3AF' }}>
               {cargando ? 'Guardando...' : 'Guardar organización'}
             </button>
           </div>
