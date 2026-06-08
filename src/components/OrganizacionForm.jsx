@@ -36,42 +36,40 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
     setCargando(true)
     setError('')
     try {
-      // 1. Guardar la organización
-      const payload = {
-        ...form,
-        tipo_organizacion: tipo,
-        ...(tipo === 'AC' ? { asociacion_civil: {
-          razon_social: detalle.razon_social,
-          nombre_representante: detalle.nombre_representante,
-          objeto_social: detalle.objeto_social,
-          metas_institucionales: detalle.metas_institucionales,
-          descripcion_general: detalle.descripcion_general,
-          problematica: detalle.problematica,
-          num_empleados: detalle.num_empleados,
-          presupuesto_anual: detalle.presupuesto_anual,
-          principales_donantes: detalle.principales_donantes,
-        }} : { municipio: {
-          nombre_municipio: detalle.nombre_municipio,
-          nombre_presidente: detalle.nombre_presidente,
-          nombre_sindicato: detalle.nombre_sindicato,
-          periodo_gestion: detalle.periodo_gestion,
-          actividad_economica: detalle.actividad_economica,
-          logros_alcanzados: detalle.logros_alcanzados,
-        }})
-      }
-      const resOrg = await api.post('/organizaciones', payload)
-      const idProyecto = resOrg.data?.proyecto?.id_proyecto
+      const formData = new FormData()
 
-      // 2. Subir carta de intención si se obtuvo el id_proyecto
-      if (idProyecto && cartaIntencion) {
-        const formData = new FormData()
-        formData.append('archivo', cartaIntencion)
-        formData.append('tipo_documento', 'carta_intencion')
-        formData.append('id_proyecto', idProyecto)
-        await api.post('/documentos', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
+      // Datos generales
+      formData.append('tipo_organizacion', tipo)
+      formData.append('rfc', form.rfc)
+      formData.append('telefono', form.telefono)
+      formData.append('email', form.email)
+      formData.append('direccion_fiscal', form.direccion_fiscal)
+      formData.append('participo_antes', form.participo_antes)
+      formData.append('carta_intencion', cartaIntencion)
+
+      // Datos según tipo
+      if (tipo === 'AC') {
+        formData.append('asociacion_civil[razon_social]', detalle.razon_social)
+        formData.append('asociacion_civil[nombre_representante]', detalle.nombre_representante)
+        formData.append('asociacion_civil[objeto_social]', detalle.objeto_social)
+        formData.append('asociacion_civil[metas_institucionales]', detalle.metas_institucionales)
+        formData.append('asociacion_civil[descripcion_general]', detalle.descripcion_general)
+        formData.append('asociacion_civil[problematica]', detalle.problematica)
+        formData.append('asociacion_civil[num_empleados]', detalle.num_empleados)
+        formData.append('asociacion_civil[presupuesto_anual]', detalle.presupuesto_anual)
+        formData.append('asociacion_civil[principales_donantes]', detalle.principales_donantes)
+      } else {
+        formData.append('municipio[nombre_municipio]', detalle.nombre_municipio)
+        formData.append('municipio[nombre_presidente]', detalle.nombre_presidente)
+        formData.append('municipio[nombre_sindicato]', detalle.nombre_sindicato)
+        formData.append('municipio[periodo_gestion]', detalle.periodo_gestion)
+        formData.append('municipio[actividad_economica]', detalle.actividad_economica)
+        formData.append('municipio[logros_alcanzados]', detalle.logros_alcanzados)
       }
+
+      await api.post('/organizaciones', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
 
       onGuardado()
     } catch (err) {
