@@ -22,8 +22,7 @@ export default function Organizaciones() {
     cargarOrganizaciones()
   }, [])
 
-  const cargarOrganizaciones = async (mostrarCarga = true) => {
-    if (mostrarCarga) setCargando(true)
+  const cargarOrganizaciones = async () => {
     try {
       const res = await api.get('/organizaciones')
       setOrganizaciones(res.data.data || [])
@@ -33,13 +32,11 @@ export default function Organizaciones() {
       setCargando(false)
     }
   }
-  
+
   const handleGuardado = () => {
     setMostrarForm(false)
-    setTimeout(() => {
-      mostrar('Organización guardada correctamente')
-    }, 300)
-    cargarOrganizaciones(false)
+    cargarOrganizaciones()
+    mostrar('Organización guardada correctamente')
   }
 
   const handleEliminar = async (id) => {
@@ -65,15 +62,9 @@ export default function Organizaciones() {
   })
 
   return (
-    <Layout>    
-    <button 
-      onClick={() => mostrar('prueba')} 
-      className="bg-blue-500 text-white px-4 py-2 rounded">
-      Probar Toast
-    </button>
-
+    <Layout>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Organizaciones****</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Organizaciones</h2>
         {!esAdmin() && (
           <button
             onClick={() => setMostrarForm(true)}
