@@ -22,7 +22,8 @@ export default function Organizaciones() {
     cargarOrganizaciones()
   }, [])
 
-  const cargarOrganizaciones = async () => {
+  const cargarOrganizaciones = async (mostrarCarga = true) => {
+    if (mostrarCarga) setCargando(true)
     try {
       const res = await api.get('/organizaciones')
       setOrganizaciones(res.data.data || [])
@@ -32,10 +33,10 @@ export default function Organizaciones() {
       setCargando(false)
     }
   }
-
+  
   const handleGuardado = async () => {
     setMostrarForm(false)
-    await cargarOrganizaciones()
+    await cargarOrganizaciones(false) // ← no muestra spinner
     mostrar('Organización guardada correctamente')
   }
 
