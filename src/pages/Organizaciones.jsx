@@ -34,10 +34,12 @@ export default function Organizaciones() {
     }
   }
   
-  const handleGuardado = async () => {
+  const handleGuardado = () => {
     setMostrarForm(false)
-    await cargarOrganizaciones(false) // ← no muestra spinner
-    mostrar('Organización guardada correctamente')
+    setTimeout(() => {
+      mostrar('Organización guardada correctamente')
+    }, 300)
+    cargarOrganizaciones(false)
   }
 
   const handleEliminar = async (id) => {
