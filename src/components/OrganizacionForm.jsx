@@ -71,7 +71,8 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 
-      mostrar('Organización registrada correctamente')
+      alert('Organización registrada correctamente')
+setTimeout(() => onGuardado(), 2000)
       setTimeout(() => onGuardado(), 2000)
 
     } catch (err) {
