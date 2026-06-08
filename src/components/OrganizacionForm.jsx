@@ -71,8 +71,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 
-      alert('Organización registrada correctamente')
-setTimeout(() => onGuardado(), 2000)
+      mostrar('Organización registrada correctamente')
       setTimeout(() => onGuardado(), 2000)
 
     } catch (err) {
@@ -86,7 +85,7 @@ setTimeout(() => onGuardado(), 2000)
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-screen overflow-y-auto">
         <div className="p-6 border-b flex justify-between items-center">
-          <h3 className="text-lg font-bold text-gray-800">Nueva Organización</h3>
+          <h3 className="text-lg font-bold text-gray-800">Nueva Organización**</h3>
           <button onClick={onCancelar} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
 
