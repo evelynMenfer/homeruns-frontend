@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import api from '../api/axios'
-import Toast from './Toast'
-import useToast from '../hooks/useToast'
 
 export default function OrganizacionForm({ onGuardado, onCancelar }) {
   const [tipo, setTipo] = useState('AC')
@@ -18,7 +16,6 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
   const [cartaIntencion, setCartaIntencion] = useState(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
-  const { toast, mostrar, cerrar } = useToast()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -39,41 +36,44 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
     setCargando(true)
     setError('')
     try {
-      const formData = new FormData()
-      formData.append('tipo_organizacion', tipo)
-      formData.append('rfc', form.rfc)
-      formData.append('telefono', form.telefono)
-      formData.append('email', form.email)
-      formData.append('direccion_fiscal', form.direccion_fiscal)
-      formData.append('participo_antes', form.participo_antes)
-      formData.append('carta_intencion', cartaIntencion)
+      // 1. Guardar la organización
+      const payload = {
+        ...form,
+        tipo_organizacion: tipo,
+        ...(tipo === 'AC' ? { asociacion_civil: {
+          razon_social: detalle.razon_social,
+          nombre_representante: detalle.nombre_representante,
+          objeto_social: detalle.objeto_social,
+          metas_institucionales: detalle.metas_institucionales,
+          descripcion_general: detalle.descripcion_general,
+          problematica: detalle.problematica,
+          num_empleados: detalle.num_empleados,
+          presupuesto_anual: detalle.presupuesto_anual,
+          principales_donantes: detalle.principales_donantes,
+        }} : { municipio: {
+          nombre_municipio: detalle.nombre_municipio,
+          nombre_presidente: detalle.nombre_presidente,
+          nombre_sindicato: detalle.nombre_sindicato,
+          periodo_gestion: detalle.periodo_gestion,
+          actividad_economica: detalle.actividad_economica,
+          logros_alcanzados: detalle.logros_alcanzados,
+        }})
+      }
+      const resOrg = await api.post('/organizaciones', payload)
+      const idProyecto = resOrg.data?.proyecto?.id_proyecto
 
-      if (tipo === 'AC') {
-        formData.append('asociacion_civil[razon_social]', detalle.razon_social)
-        formData.append('asociacion_civil[nombre_representante]', detalle.nombre_representante)
-        formData.append('asociacion_civil[objeto_social]', detalle.objeto_social)
-        formData.append('asociacion_civil[metas_institucionales]', detalle.metas_institucionales)
-        formData.append('asociacion_civil[descripcion_general]', detalle.descripcion_general)
-        formData.append('asociacion_civil[problematica]', detalle.problematica)
-        formData.append('asociacion_civil[num_empleados]', detalle.num_empleados)
-        formData.append('asociacion_civil[presupuesto_anual]', detalle.presupuesto_anual)
-        formData.append('asociacion_civil[principales_donantes]', detalle.principales_donantes)
-      } else {
-        formData.append('municipio[nombre_municipio]', detalle.nombre_municipio)
-        formData.append('municipio[nombre_presidente]', detalle.nombre_presidente)
-        formData.append('municipio[nombre_sindicato]', detalle.nombre_sindicato)
-        formData.append('municipio[periodo_gestion]', detalle.periodo_gestion)
-        formData.append('municipio[actividad_economica]', detalle.actividad_economica)
-        formData.append('municipio[logros_alcanzados]', detalle.logros_alcanzados)
+      // 2. Subir carta de intención si se obtuvo el id_proyecto
+      if (idProyecto && cartaIntencion) {
+        const formData = new FormData()
+        formData.append('archivo', cartaIntencion)
+        formData.append('tipo_documento', 'carta_intencion')
+        formData.append('id_proyecto', idProyecto)
+        await api.post('/documentos', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       }
 
-      await api.post('/organizaciones', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-
-      mostrar('Organización registrada correctamente')
-      setTimeout(() => onGuardado(), 2000)
-
+      onGuardado()
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
     } finally {
@@ -85,7 +85,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-screen overflow-y-auto">
         <div className="p-6 border-b flex justify-between items-center">
-          <h3 className="text-lg font-bold text-gray-800">Nueva Organización**</h3>
+          <h3 className="text-lg font-bold text-gray-800">Nueva Organización</h3>
           <button onClick={onCancelar} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
 
@@ -252,9 +252,6 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
           </div>
         </form>
       </div>
-
-      {/* Toast dentro del modal */}
-      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </div>
   )
 }
