@@ -71,7 +71,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 
-      onGuardado()
+      onGuardado('Organización registrada correctamente')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
     } finally {
