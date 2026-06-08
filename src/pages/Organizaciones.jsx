@@ -34,9 +34,9 @@ export default function Organizaciones() {
   }
 
   const handleGuardado = () => {
-    setMostrarForm(false)
-    cargarOrganizaciones()
     mostrar('Organización guardada correctamente')
+    cargarOrganizaciones()
+    setMostrarForm(false)
   }
 
   const handleEliminar = async (id) => {
