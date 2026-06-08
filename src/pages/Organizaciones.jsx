@@ -33,10 +33,10 @@ export default function Organizaciones() {
     }
   }
 
-  const handleGuardado = () => {
-    mostrar('Organización guardada correctamente')
+  const handleGuardado = async () => {
     setMostrarForm(false)
-    cargarOrganizaciones()
+    await cargarOrganizaciones()
+    mostrar('Organización guardada correctamente')
   }
 
   const handleEliminar = async (id) => {
