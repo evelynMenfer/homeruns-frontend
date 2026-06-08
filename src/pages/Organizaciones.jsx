@@ -65,6 +65,11 @@ export default function Organizaciones() {
   })
 
   return (
+    <button 
+      onClick={() => mostrar('prueba')} 
+      className="bg-blue-500 text-white px-4 py-2 rounded">
+      Probar Toast
+    </button>
     <Layout>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Organizaciones</h2>
