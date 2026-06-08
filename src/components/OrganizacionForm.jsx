@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import api from '../api/axios'
+import Toast from './Toast'
+import useToast from '../hooks/useToast'
 
 export default function OrganizacionForm({ onGuardado, onCancelar }) {
   const [tipo, setTipo] = useState('AC')
@@ -16,6 +18,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
   const [cartaIntencion, setCartaIntencion] = useState(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+  const { toast, mostrar, cerrar } = useToast()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -37,8 +40,6 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
     setError('')
     try {
       const formData = new FormData()
-
-      // Datos generales
       formData.append('tipo_organizacion', tipo)
       formData.append('rfc', form.rfc)
       formData.append('telefono', form.telefono)
@@ -47,7 +48,6 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
       formData.append('participo_antes', form.participo_antes)
       formData.append('carta_intencion', cartaIntencion)
 
-      // Datos según tipo
       if (tipo === 'AC') {
         formData.append('asociacion_civil[razon_social]', detalle.razon_social)
         formData.append('asociacion_civil[nombre_representante]', detalle.nombre_representante)
@@ -71,7 +71,9 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 
-      onGuardado('Organización registrada correctamente')
+      mostrar('Organización registrada correctamente')
+      setTimeout(() => onGuardado(), 2000)
+
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
     } finally {
@@ -250,6 +252,9 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
           </div>
         </form>
       </div>
+
+      {/* Toast dentro del modal */}
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </div>
   )
 }
