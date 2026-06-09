@@ -58,7 +58,6 @@ export default function MiOrganizacion() {
     setGuardando(true)
     setError('')
     try {
-      // Si hay nueva carta, enviar como FormData
       if (nuevaCarta) {
         const formData = new FormData()
         Object.keys(form).forEach(key => {
@@ -84,11 +83,10 @@ export default function MiOrganizacion() {
       } else {
         await api.put(`/organizaciones/${organizacion.id_organizacion}`, form)
       }
-
       setEditando(false)
       setNuevaCarta(null)
-      cargarMiOrganizacion()
       mostrar('Información actualizada correctamente')
+      cargarMiOrganizacion()
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
       mostrar('Error al guardar los cambios', 'error')
@@ -172,16 +170,20 @@ export default function MiOrganizacion() {
     <div>
       <p className="text-xs text-gray-500 mb-1">Carta de intención</p>
       {organizacion.carta_intencion_ruta ? (
-        <div className="flex items-center gap-3">
-          
+       <div className="flex items-center gap-3">
+          <a
             href="#"
             onClick={async (e) => {
               e.preventDefault()
-              const url = `${import.meta.env.VITE_API_URL}/api/organizaciones/${organizacion.id_organizacion}/carta`
-              const res = await api.get(`/organizaciones/${organizacion.id_organizacion}/carta`)
+        
+              const res = await api.get(
+                `/organizaciones/${organizacion.id_organizacion}/carta`
+              )
+        
               window.open(res.data.url, '_blank')
             }}
-            className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1">
+            className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
+          >
             📄 Ver carta de intención
           </a>
         </div>
@@ -246,13 +248,9 @@ export default function MiOrganizacion() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* Izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
-            {/* Carta de intención primero */}
             {campoCarta()}
-
             {esAC ? (
               <>
                 {campoTexto('Razón social', 'razon_social', true)}
@@ -276,7 +274,6 @@ export default function MiOrganizacion() {
           </div>
         </div>
 
-        {/* Derecha */}
         <div className="bg-white rounded-xl shadow p-6">
           <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
           <div className="space-y-4">
@@ -300,8 +297,8 @@ export default function MiOrganizacion() {
             )}
           </div>
         </div>
-
       </div>
+
       {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
