@@ -34,8 +34,36 @@ export default function MiOrganizacion() {
           email: miOrg.email || '',
           direccion_fiscal: miOrg.direccion_fiscal || '',
           participo_antes: miOrg.participo_antes || 'N',
-          asociacion_civil: miOrg.asociacion_civil || {},
-          municipio: miOrg.municipio || {}
+          asociacion_civil: {
+            razon_social: miOrg.asociacion_civil?.razon_social || '',
+            nombre_representante: miOrg.asociacion_civil?.nombre_representante || '',
+            telefono_representante: miOrg.asociacion_civil?.telefono_representante || '',
+            email_representante: miOrg.asociacion_civil?.email_representante || '',
+            pagina_web: miOrg.asociacion_civil?.pagina_web || '',
+            objeto_social: miOrg.asociacion_civil?.objeto_social || '',
+            metas_institucionales: miOrg.asociacion_civil?.metas_institucionales || '',
+            descripcion_general: miOrg.asociacion_civil?.descripcion_general || '',
+            problematica: miOrg.asociacion_civil?.problematica || '',
+            num_empleados: miOrg.asociacion_civil?.num_empleados || '',
+            presupuesto_anual: miOrg.asociacion_civil?.presupuesto_anual || '',
+            principales_donantes: miOrg.asociacion_civil?.principales_donantes || '',
+            nombre_contador: miOrg.asociacion_civil?.nombre_contador || '',
+            telefono_contador: miOrg.asociacion_civil?.telefono_contador || '',
+            email_contador: miOrg.asociacion_civil?.email_contador || '',
+          },
+          municipio: {
+            nombre_municipio: miOrg.municipio?.nombre_municipio || '',
+            nombre_presidente: miOrg.municipio?.nombre_presidente || '',
+            telefono_presidente: miOrg.municipio?.telefono_presidente || '',
+            nombre_sindicato: miOrg.municipio?.nombre_sindicato || '',
+            telefono_sindicato: miOrg.municipio?.telefono_sindicato || '',
+            periodo_gestion: miOrg.municipio?.periodo_gestion || '',
+            actividad_economica: miOrg.municipio?.actividad_economica || '',
+            logros_alcanzados: miOrg.municipio?.logros_alcanzados || '',
+            nombre_contador: miOrg.municipio?.nombre_contador || '',
+            telefono_contador: miOrg.municipio?.telefono_contador || '',
+            email_contador: miOrg.municipio?.email_contador || '',
+          }
         })
       }
     } catch (err) {
