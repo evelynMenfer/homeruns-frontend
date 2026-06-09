@@ -158,7 +158,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
               <h4 className="font-medium text-gray-700">Datos de Asociación Civil</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Razón social</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Institución</label>
                   <input name="razon_social" value={detalle.razon_social} onChange={handleDetalle} className={inputClass} />
                 </div>
                 <div className="col-span-2">
@@ -207,32 +207,32 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Núm. empleados</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">¿Cuál es el número de empleados con el que operan?</label>
                   <input name="num_empleados" type="number" value={detalle.num_empleados} onChange={handleDetalle} className={inputClass} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Presupuesto anual</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">¿Cuál es su presupuesto anual?</label>
                   <input name="presupuesto_anual" type="number" value={detalle.presupuesto_anual} onChange={handleDetalle} className={inputClass} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Objeto social</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Objeto social(acta constitutiva) y cómo se relaciona con el proyecto que presenta</label>
                 <textarea name="objeto_social" value={detalle.objeto_social} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Metas institucionales</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mencione las metas institucionales</label>
                 <textarea name="metas_institucionales" value={detalle.metas_institucionales} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descripción general</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Descripción general de los proyectos y avtividades que ejecuta la institución que presenta su objeto social</label>
                 <textarea name="descripcion_general" value={detalle.descripcion_general} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Principales donantes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Enliste a sus Principales donantes</label>
                 <textarea name="principales_donantes" value={detalle.principales_donantes} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Problemática</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Defina la problemática que su propuesta de proyecto busca atender </label>
                 <textarea name="problematica" value={detalle.problematica} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
             </div>
@@ -297,15 +297,15 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Período de gestión</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Período de gestión administrativa</label>
                 <input name="periodo_gestion" value={detalle.periodo_gestion} onChange={handleDetalle} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Actividad económica</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">¿Cuál es la principal actividad económica de su municipio?</label>
                 <textarea name="actividad_economica" value={detalle.actividad_economica} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Logros alcanzados</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mencione los logros alcanzados en su administración</label>
                 <textarea name="logros_alcanzados" value={detalle.logros_alcanzados} onChange={handleDetalle} rows={2} className={inputClass} />
               </div>
             </div>
