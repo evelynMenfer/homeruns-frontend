@@ -15,6 +15,7 @@ export default function MiOrganizacion() {
   const [form, setForm] = useState({})
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [nuevaCarta, setNuevaCarta] = useState(null)
   const { toast, mostrar, cerrar } = useToast()
 
   useEffect(() => {
@@ -57,8 +58,35 @@ export default function MiOrganizacion() {
     setGuardando(true)
     setError('')
     try {
-      await api.put(`/organizaciones/${organizacion.id_organizacion}`, form)
+      // Si hay nueva carta, enviar como FormData
+      if (nuevaCarta) {
+        const formData = new FormData()
+        Object.keys(form).forEach(key => {
+          if (key !== 'asociacion_civil' && key !== 'municipio') {
+            formData.append(key, form[key])
+          }
+        })
+        if (form.asociacion_civil) {
+          Object.keys(form.asociacion_civil).forEach(key => {
+            formData.append(`asociacion_civil[${key}]`, form.asociacion_civil[key] || '')
+          })
+        }
+        if (form.municipio) {
+          Object.keys(form.municipio).forEach(key => {
+            formData.append(`municipio[${key}]`, form.municipio[key] || '')
+          })
+        }
+        formData.append('carta_intencion', nuevaCarta)
+        formData.append('_method', 'PUT')
+        await api.post(`/organizaciones/${organizacion.id_organizacion}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      } else {
+        await api.put(`/organizaciones/${organizacion.id_organizacion}`, form)
+      }
+
       setEditando(false)
+      setNuevaCarta(null)
       cargarMiOrganizacion()
       mostrar('Información actualizada correctamente')
     } catch (err) {
@@ -140,6 +168,43 @@ export default function MiOrganizacion() {
     </div>
   )
 
+  const campoCarta = () => (
+    <div>
+      <p className="text-xs text-gray-500 mb-1">Carta de intención</p>
+      {organizacion.carta_intencion_ruta ? (
+        <div className="flex items-center gap-3">
+          
+            href="#"
+            onClick={async (e) => {
+              e.preventDefault()
+              const url = `${import.meta.env.VITE_API_URL}/api/organizaciones/${organizacion.id_organizacion}/carta`
+              const res = await api.get(`/organizaciones/${organizacion.id_organizacion}/carta`)
+              window.open(res.data.url, '_blank')
+            }}
+            className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1">
+            📄 Ver carta de intención
+          </a>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-400">No cargada</p>
+      )}
+      {editando && (
+        <div className="mt-2">
+          <p className="text-xs text-gray-500 mb-1">Reemplazar carta de intención</p>
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) => setNuevaCarta(e.target.files[0])}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218] file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#D94218] file:text-white hover:file:bg-[#B83510] cursor-pointer"
+          />
+          {nuevaCarta && (
+            <p className="text-xs text-green-600 mt-1">✅ {nuevaCarta.name}</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <Layout>
       <div className="mb-6 flex items-center justify-between">
@@ -161,7 +226,7 @@ export default function MiOrganizacion() {
             </button>
           ) : (
             <>
-              <button onClick={() => setEditando(false)}
+              <button onClick={() => { setEditando(false); setNuevaCarta(null) }}
                 className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
                 Cancelar
               </button>
@@ -184,10 +249,10 @@ export default function MiOrganizacion() {
 
         {/* Izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="font-semibold text-gray-700 mb-4">
-            {/*esAC ? 'Asociación Civil' : 'Municipio'*/}
-          </h3>
           <div className="space-y-4">
+            {/* Carta de intención primero */}
+            {campoCarta()}
+
             {esAC ? (
               <>
                 {campoTexto('Razón social', 'razon_social', true)}
@@ -217,10 +282,9 @@ export default function MiOrganizacion() {
           <div className="space-y-4">
             {esAC ? (
               <>
-               
                 {campoTextarea('Objeto social', 'objeto_social', true)}
                 {campoTextarea('Metas institucionales', 'metas_institucionales', true)}
-                {campoTextarea('Descripción general de los proyectos y actividades que ejecuta la institución acorde a su objetivo social', 'descripcion_general', true)}
+                {campoTextarea('Descripción general', 'descripcion_general', true)}
                 {campoTextarea('Problemática', 'problematica', true)}
                 {campoTexto('Número de empleados', 'num_empleados', true, 'number')}
                 {campoTexto('Presupuesto anual', 'presupuesto_anual', true, 'number')}
@@ -229,9 +293,9 @@ export default function MiOrganizacion() {
             ) : (
               <>
                 {campoParticipo()}
-                {campoTextarea('Logros alcanzados en su administración', 'logros_alcanzados', true)}
-                {campoTexto('Período de gestión administrativa', 'periodo_gestion', true)}
-                {campoTextarea('Actividad económica de su municipio', 'actividad_economica', true)}
+                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
+                {campoTexto('Período de gestión', 'periodo_gestion', true)}
+                {campoTextarea('Actividad económica', 'actividad_economica', true)}
               </>
             )}
           </div>
