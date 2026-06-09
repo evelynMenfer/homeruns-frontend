@@ -122,6 +122,7 @@ export default function MiOrganizacion() {
 
   const esAC = organizacion.tipo_organizacion === 'AC'
   const detalle = esAC ? organizacion.asociacion_civil : organizacion.municipio
+  const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
 
   const campoTexto = (label, name, isDetalle = false, type = 'text') => (
     <div key={name}>
@@ -130,7 +131,7 @@ export default function MiOrganizacion() {
         <input name={name} type={type}
           value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
           onChange={isDetalle ? handleDetalle : handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+          className={inputClass} />
       ) : (
         <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : organizacion[name]) || '—'}</p>
       )}
@@ -144,7 +145,7 @@ export default function MiOrganizacion() {
         <textarea name={name} rows={3}
           value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
           onChange={isDetalle ? handleDetalle : handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+          className={inputClass} />
       ) : (
         <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : organizacion[name]) || '—'}</p>
       )}
@@ -155,8 +156,7 @@ export default function MiOrganizacion() {
     <div>
       <p className="text-xs text-gray-500 mb-1">¿Participó antes en el programa Home Runs?</p>
       {editando ? (
-        <select name="participo_antes" value={form.participo_antes} onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+        <select name="participo_antes" value={form.participo_antes} onChange={handleChange} className={inputClass}>
           <option value="N">No</option>
           <option value="S">Sí</option>
         </select>
@@ -169,17 +169,18 @@ export default function MiOrganizacion() {
   const campoCarta = () => (
     <div>
       <p className="text-xs text-gray-500 mb-1">Carta de intención</p>
+  
       {organizacion.carta_intencion_ruta ? (
-       <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <a
             href="#"
             onClick={async (e) => {
               e.preventDefault()
-        
+  
               const res = await api.get(
                 `/organizaciones/${organizacion.id_organizacion}/carta`
               )
-        
+  
               window.open(res.data.url, '_blank')
             }}
             className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
@@ -190,20 +191,38 @@ export default function MiOrganizacion() {
       ) : (
         <p className="text-sm text-gray-400">No cargada</p>
       )}
+  
       {editando && (
         <div className="mt-2">
-          <p className="text-xs text-gray-500 mb-1">Reemplazar carta de intención</p>
+          <p className="text-xs text-gray-500 mb-1">
+            Reemplazar carta de intención
+          </p>
+  
           <input
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
             onChange={(e) => setNuevaCarta(e.target.files[0])}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218] file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#D94218] file:text-white hover:file:bg-[#B83510] cursor-pointer"
           />
+  
           {nuevaCarta && (
-            <p className="text-xs text-green-600 mt-1">✅ {nuevaCarta.name}</p>
+            <p className="text-xs text-green-600 mt-1">
+              ✅ {nuevaCarta.name}
+            </p>
           )}
         </div>
       )}
+    </div>
+  )
+
+  const seccionContador = () => (
+    <div className="border-t pt-4">
+      <h4 className="font-medium text-gray-700 mb-3">Datos del contador</h4>
+      <div className="space-y-3">
+        {campoTexto('Nombre', 'nombre_contador', true)}
+        {campoTexto('Teléfono', 'telefono_contador', true)}
+        {campoTexto('Correo', 'email_contador', true, 'email')}
+      </div>
     </div>
   )
 
@@ -248,57 +267,88 @@ export default function MiOrganizacion() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Columna izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
             {campoCarta()}
+
             {esAC ? (
               <>
                 {campoTexto('Razón social', 'razon_social', true)}
                 {campoTexto('RFC', 'rfc')}
-                {campoTexto('Representante legal', 'nombre_representante', true)}
+                {campoTexto('Página web', 'pagina_web', true)}
                 {campoTexto('Teléfono', 'telefono')}
                 {campoTexto('Correo electrónico', 'email', false, 'email')}
                 {campoParticipo()}
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Representante legal</h4>
+                  <div className="space-y-3">
+                    {campoTexto('Nombre', 'nombre_representante', true)}
+                    {campoTexto('Teléfono', 'telefono_representante', true)}
+                    {campoTexto('Correo', 'email_representante', true, 'email')}
+                  </div>
+                </div>
+
+                {seccionContador()}
               </>
             ) : (
               <>
                 {campoTexto('Nombre del municipio', 'nombre_municipio', true)}
                 {campoTexto('RFC', 'rfc')}
-                {campoTexto('Nombre del presidente municipal', 'nombre_presidente', true)}
-                {campoTexto('Nombre del síndico municipal', 'nombre_sindicato', true)}
                 {campoTexto('Teléfono', 'telefono')}
                 {campoTexto('Correo electrónico', 'email', false, 'email')}
-                {campoTextarea('Dirección fiscal del municipio', 'direccion_fiscal')}
+                {campoTextarea('Dirección fiscal', 'direccion_fiscal')}
+                {campoParticipo()}
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
+                  <div className="space-y-3">
+                    {campoTexto('Nombre', 'nombre_presidente', true)}
+                    {campoTexto('Teléfono', 'telefono_presidente', true)}
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
+                  <div className="space-y-3">
+                    {campoTexto('Nombre', 'nombre_sindico', true)}
+                    {campoTexto('Teléfono', 'telefono_sindico', true)}
+                  </div>
+                </div>
+
+                {seccionContador()}
               </>
             )}
           </div>
         </div>
 
+        {/* Columna derecha */}
         <div className="bg-white rounded-xl shadow p-6">
           <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
           <div className="space-y-4">
             {esAC ? (
               <>
+                {campoTexto('Número de empleados', 'num_empleados', true, 'number')}
+                {campoTexto('Presupuesto anual', 'presupuesto_anual', true, 'number')}
                 {campoTextarea('Objeto social', 'objeto_social', true)}
                 {campoTextarea('Metas institucionales', 'metas_institucionales', true)}
                 {campoTextarea('Descripción general', 'descripcion_general', true)}
-                {campoTextarea('Problemática', 'problematica', true)}
-                {campoTexto('Número de empleados', 'num_empleados', true, 'number')}
-                {campoTexto('Presupuesto anual', 'presupuesto_anual', true, 'number')}
                 {campoTextarea('Principales donantes', 'principales_donantes', true)}
+                {campoTextarea('Problemática', 'problematica', true)}
               </>
             ) : (
               <>
-                {campoParticipo()}
-                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
                 {campoTexto('Período de gestión', 'periodo_gestion', true)}
                 {campoTextarea('Actividad económica', 'actividad_economica', true)}
+                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
               </>
             )}
           </div>
         </div>
-      </div>
 
+      </div>
       {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={cerrar} />}
     </Layout>
   )
