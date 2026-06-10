@@ -13,6 +13,7 @@ export default function OrganizacionDetalle() {
   const [form, setForm] = useState({})
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [nuevaCarta, setNuevaCarta] = useState(null)
   const { esAdmin } = useAuth()
 
   useEffect(() => {
@@ -29,8 +30,36 @@ export default function OrganizacionDetalle() {
         email: res.data.email || '',
         direccion_fiscal: res.data.direccion_fiscal || '',
         participo_antes: res.data.participo_antes || 'N',
-        asociacion_civil: res.data.asociacion_civil || {},
-        municipio: res.data.municipio || {}
+        asociacion_civil: {
+          razon_social: res.data.asociacion_civil?.razon_social || '',
+          nombre_representante: res.data.asociacion_civil?.nombre_representante || '',
+          telefono_representante: res.data.asociacion_civil?.telefono_representante || '',
+          email_representante: res.data.asociacion_civil?.email_representante || '',
+          pagina_web: res.data.asociacion_civil?.pagina_web || '',
+          objeto_social: res.data.asociacion_civil?.objeto_social || '',
+          metas_institucionales: res.data.asociacion_civil?.metas_institucionales || '',
+          descripcion_general: res.data.asociacion_civil?.descripcion_general || '',
+          problematica: res.data.asociacion_civil?.problematica || '',
+          num_empleados: res.data.asociacion_civil?.num_empleados || '',
+          presupuesto_anual: res.data.asociacion_civil?.presupuesto_anual || '',
+          principales_donantes: res.data.asociacion_civil?.principales_donantes || '',
+          nombre_contador: res.data.asociacion_civil?.nombre_contador || '',
+          telefono_contador: res.data.asociacion_civil?.telefono_contador || '',
+          email_contador: res.data.asociacion_civil?.email_contador || '',
+        },
+        municipio: {
+          nombre_municipio: res.data.municipio?.nombre_municipio || '',
+          nombre_presidente: res.data.municipio?.nombre_presidente || '',
+          telefono_presidente: res.data.municipio?.telefono_presidente || '',
+          nombre_sindico: res.data.municipio?.nombre_sindico || '',
+          telefono_sindico: res.data.municipio?.telefono_sindico || '',
+          periodo_gestion: res.data.municipio?.periodo_gestion || '',
+          actividad_economica: res.data.municipio?.actividad_economica || '',
+          logros_alcanzados: res.data.municipio?.logros_alcanzados || '',
+          nombre_contador: res.data.municipio?.nombre_contador || '',
+          telefono_contador: res.data.municipio?.telefono_contador || '',
+          email_contador: res.data.municipio?.email_contador || '',
+        }
       })
     } catch (err) {
       console.error(err)
@@ -52,8 +81,33 @@ export default function OrganizacionDetalle() {
     setGuardando(true)
     setError('')
     try {
-      await api.put(`/organizaciones/${id}`, form)
+      if (nuevaCarta) {
+        const formData = new FormData()
+        Object.keys(form).forEach(key => {
+          if (key !== 'asociacion_civil' && key !== 'municipio') {
+            formData.append(key, form[key])
+          }
+        })
+        if (form.asociacion_civil) {
+          Object.keys(form.asociacion_civil).forEach(key => {
+            formData.append(`asociacion_civil[${key}]`, form.asociacion_civil[key] || '')
+          })
+        }
+        if (form.municipio) {
+          Object.keys(form.municipio).forEach(key => {
+            formData.append(`municipio[${key}]`, form.municipio[key] || '')
+          })
+        }
+        formData.append('carta_intencion', nuevaCarta)
+        formData.append('_method', 'PUT')
+        await api.post(`/organizaciones/${id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+      } else {
+        await api.put(`/organizaciones/${id}`, form)
+      }
       setEditando(false)
+      setNuevaCarta(null)
       cargarOrganizacion()
     } catch (err) {
       setError(err.response?.data?.message || 'Error al guardar')
@@ -77,6 +131,35 @@ export default function OrganizacionDetalle() {
 
   const esAC = org.tipo_organizacion === 'AC'
   const detalle = esAC ? org.asociacion_civil : org.municipio
+  const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
+
+  const campo = (label, name, isDetalle = false, type = 'text') => (
+    <div key={name}>
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
+      {editando ? (
+        <input name={name} type={type}
+          value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
+          onChange={isDetalle ? handleDetalle : handleChange}
+          className={inputClass} />
+      ) : (
+        <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : org[name]) || '—'}</p>
+      )}
+    </div>
+  )
+
+  const campoTextarea = (label, name, isDetalle = false) => (
+    <div key={name}>
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
+      {editando ? (
+        <textarea name={name} rows={3}
+          value={isDetalle ? (form[esAC ? 'asociacion_civil' : 'municipio']?.[name] || '') : (form[name] || '')}
+          onChange={isDetalle ? handleDetalle : handleChange}
+          className={inputClass} />
+      ) : (
+        <p className="text-sm font-medium">{(isDetalle ? detalle?.[name] : org[name]) || '—'}</p>
+      )}
+    </div>
+  )
 
   return (
     <Layout>
@@ -96,29 +179,28 @@ export default function OrganizacionDetalle() {
           </span>
         </div>
         <div className="flex gap-2">
-          {esAdmin() ? (
+          {esAdmin() && (
             <button onClick={handleEliminar}
               className="px-4 py-2 border border-red-400 text-red-500 hover:bg-red-50 rounded-lg text-sm transition">
               Eliminar
             </button>
+          )}
+          {!editando ? (
+            <button onClick={() => setEditando(true)}
+              className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
+              Editar
+            </button>
           ) : (
-            !editando ? (
-              <button onClick={() => setEditando(true)}
-                className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
-                Editar
+            <>
+              <button onClick={() => { setEditando(false); setNuevaCarta(null) }}
+                className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
+                Cancelar
               </button>
-            ) : (
-              <>
-                <button onClick={() => setEditando(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
-                  Cancelar
-                </button>
-                <button onClick={handleGuardar} disabled={guardando}
-                  className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
-                  {guardando ? 'Guardando...' : 'Guardar cambios'}
-                </button>
-              </>
-            )
+              <button onClick={handleGuardar} disabled={guardando}
+                className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
+                {guardando ? 'Guardando...' : 'Guardar cambios'}
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -131,101 +213,147 @@ export default function OrganizacionDetalle() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {/* Datos generales */}
+        {/* Columna izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
           <div className="space-y-4">
-            {[
-              { label: 'RFC', name: 'rfc' },
-              { label: 'Teléfono', name: 'telefono' },
-              { label: 'Email', name: 'email', type: 'email' },
-            ].map(campo => (
-              <div key={campo.name}>
-                <p className="text-xs text-gray-500 mb-1">{campo.label}</p>
-                {editando ? (
-                  <input name={campo.name} type={campo.type || 'text'} value={form[campo.name]} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                ) : (
-                  <p className="text-sm font-medium">{org[campo.name] || '—'}</p>
-                )}
-              </div>
-            ))}
-            <div>
-              <p className="text-xs text-gray-500 mb-1">¿Participó antes?</p>
-              {editando ? (
-                <select name="participo_antes" value={form.participo_antes} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
-                  <option value="N">No</option>
-                  <option value="S">Sí</option>
-                </select>
-              ) : (
-                <p className="text-sm font-medium">{org.participo_antes === 'S' ? 'Sí' : 'No'}</p>
-              )}
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Dirección fiscal</p>
-              {editando ? (
-                <textarea name="direccion_fiscal" value={form.direccion_fiscal} onChange={handleChange} rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-              ) : (
-                <p className="text-sm font-medium">{org.direccion_fiscal || '—'}</p>
-              )}
-            </div>
-          </div>
-        </div>
 
-        {/* Datos específicos */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="font-semibold text-gray-700 mb-4">
-            {esAC ? 'Datos de Asociación Civil' : 'Datos del Municipio'}
-          </h3>
-          <div className="space-y-4">
+            {/* Carta de intención */}
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Carta de intención</p>
+              {org.carta_intencion_ruta ? (
+                <a
+                  href="#"
+                  onClick={async (e) => {
+                    e.preventDefault()
+                    const res = await api.get(`/organizaciones/${id}/carta`)
+                    window.open(res.data.url, '_blank')
+                  }}
+                  className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
+                >
+                  📄 Ver carta de intención
+                </a>
+              ) : (
+                <p className="text-sm text-gray-400">No cargada</p>
+              )}
+              {editando && (
+                <div className="mt-2">
+                  <p className="text-xs text-gray-500 mb-1">Reemplazar carta de intención</p>
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setNuevaCarta(e.target.files[0])}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#D94218] file:text-white cursor-pointer"
+                  />
+                  {nuevaCarta && <p className="text-xs text-green-600 mt-1">✅ {nuevaCarta.name}</p>}
+                </div>
+              )}
+            </div>
+
             {esAC ? (
               <>
-                {[
-                  { label: 'Razón social', name: 'razon_social' },
-                  { label: 'Representante', name: 'nombre_representante' },
-                  { label: 'Núm. empleados', name: 'num_empleados', type: 'number' },
-                  { label: 'Presupuesto anual', name: 'presupuesto_anual', type: 'number' },
-                  { label: 'Principales donantes', name: 'principales_donantes' },
-                ].map(campo => (
-                  <div key={campo.name}>
-                    <p className="text-xs text-gray-500 mb-1">{campo.label}</p>
-                    {editando ? (
-                      <input name={campo.name} type={campo.type || 'text'}
-                        value={form.asociacion_civil?.[campo.name] || ''} onChange={handleDetalle}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                    ) : (
-                      <p className="text-sm font-medium">{detalle?.[campo.name] || '—'}</p>
-                    )}
+                {campo('Razón social', 'razon_social', true)}
+                {campo('RFC', 'rfc')}
+                {campo('Página web', 'pagina_web', true)}
+                {campo('Teléfono', 'telefono')}
+                {campo('Correo electrónico', 'email', false, 'email')}
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">¿Participó antes?</p>
+                  {editando ? (
+                    <select name="participo_antes" value={form.participo_antes} onChange={handleChange} className={inputClass}>
+                      <option value="N">No</option>
+                      <option value="S">Sí</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm font-medium">{org.participo_antes === 'S' ? 'Sí' : 'No'}</p>
+                  )}
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Representante legal</h4>
+                  <div className="space-y-3">
+                    {campo('Nombre', 'nombre_representante', true)}
+                    {campo('Teléfono', 'telefono_representante', true)}
+                    {campo('Correo', 'email_representante', true, 'email')}
                   </div>
-                ))}
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Datos del contador</h4>
+                  <div className="space-y-3">
+                    {campo('Nombre', 'nombre_contador', true)}
+                    {campo('Teléfono', 'telefono_contador', true)}
+                    {campo('Correo', 'email_contador', true, 'email')}
+                  </div>
+                </div>
               </>
             ) : (
               <>
-                {[
-                  { label: 'Nombre municipio', name: 'nombre_municipio' },
-                  { label: 'Presidente', name: 'nombre_presidente' },
-                  { label: 'Síndico', name: 'nombre_sindicato' },
-                  { label: 'Período de gestión', name: 'periodo_gestion' },
-                  { label: 'Actividad económica', name: 'actividad_economica' },
-                ].map(campo => (
-                  <div key={campo.name}>
-                    <p className="text-xs text-gray-500 mb-1">{campo.label}</p>
-                    {editando ? (
-                      <input name={campo.name} value={form.municipio?.[campo.name] || ''} onChange={handleDetalle}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
-                    ) : (
-                      <p className="text-sm font-medium">{detalle?.[campo.name] || '—'}</p>
-                    )}
+                {campo('Nombre del municipio', 'nombre_municipio', true)}
+                {campo('RFC', 'rfc')}
+                {campo('Teléfono', 'telefono')}
+                {campo('Correo electrónico', 'email', false, 'email')}
+                {campoTextarea('Dirección fiscal', 'direccion_fiscal')}
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">¿Participó antes?</p>
+                  {editando ? (
+                    <select name="participo_antes" value={form.participo_antes} onChange={handleChange} className={inputClass}>
+                      <option value="N">No</option>
+                      <option value="S">Sí</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm font-medium">{org.participo_antes === 'S' ? 'Sí' : 'No'}</p>
+                  )}
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
+                  <div className="space-y-3">
+                    {campo('Nombre', 'nombre_presidente', true)}
+                    {campo('Teléfono', 'telefono_presidente', true)}
                   </div>
-                ))}
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
+                  <div className="space-y-3">
+                    {campo('Nombre', 'nombre_sindico', true)}
+                    {campo('Teléfono', 'telefono_sindico', true)}
+                  </div>
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Datos del contador</h4>
+                  <div className="space-y-3">
+                    {campo('Nombre', 'nombre_contador', true)}
+                    {campo('Teléfono', 'telefono_contador', true)}
+                    {campo('Correo', 'email_contador', true, 'email')}
+                  </div>
+                </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Proyectos de la organización */}
+        {/* Columna derecha */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
+          <div className="space-y-4">
+            {esAC ? (
+              <>
+                {campo('Número de empleados', 'num_empleados', true, 'number')}
+                {campo('Presupuesto anual', 'presupuesto_anual', true, 'number')}
+                {campoTextarea('Objeto social', 'objeto_social', true)}
+                {campoTextarea('Metas institucionales', 'metas_institucionales', true)}
+                {campoTextarea('Descripción general', 'descripcion_general', true)}
+                {campoTextarea('Principales donantes', 'principales_donantes', true)}
+                {campoTextarea('Problemática', 'problematica', true)}
+              </>
+            ) : (
+              <>
+                {campo('Período de gestión', 'periodo_gestion', true)}
+                {campoTextarea('Actividad económica', 'actividad_economica', true)}
+                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Proyectos */}
         <div className="md:col-span-2 bg-white rounded-xl shadow p-6">
           <h3 className="font-semibold text-gray-700 mb-4">Proyectos</h3>
           {org.proyectos?.length === 0 ? (
