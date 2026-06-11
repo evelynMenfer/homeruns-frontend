@@ -217,37 +217,41 @@ export default function OrganizacionDetalle() {
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
 
-            {/* Carta de intención */}
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Carta de intención</p>
-              {org.carta_intencion_ruta ? (
-                <a
-                  href="#"
-                  onClick={async (e) => {
-                    e.preventDefault()
-                    const res = await api.get(`/organizaciones/${id}/carta`)
-                    window.open(res.data.url, '_blank')
-                  }}
-                  className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
-                >
-                  📄 Ver carta de intención
-                </a>
-              ) : (
-                <p className="text-sm text-gray-400">No cargada</p>
-              )}
-              {editando && (
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500 mb-1">Reemplazar carta de intención</p>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => setNuevaCarta(e.target.files[0])}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#D94218] file:text-white cursor-pointer"
-                  />
-                  {nuevaCarta && <p className="text-xs text-green-600 mt-1">✅ {nuevaCarta.name}</p>}
-                </div>
-              )}
-            </div>
+          <div className="space-y-2">
+            <a
+              href="#"
+              onClick={async (e) => {
+                e.preventDefault()
+                const res = await api.get(`/organizaciones/${id}/carta`)
+                window.open(res.data.url, '_blank')
+              }}
+              className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
+            >
+              📄 Ver carta de intención
+            </a>
+
+            <span
+              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                org.estatus_carta === 'aprobada'
+                  ? 'bg-green-100 text-green-700'
+                  : org.estatus_carta === 'rechazada'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-yellow-100 text-yellow-700'
+              }`}
+            >
+              {org.estatus_carta === 'aprobada'
+                ? '✅ Aprobada'
+                : org.estatus_carta === 'rechazada'
+                ? '❌ Rechazada'
+                : '⏳ Pendiente'}
+            </span>
+
+            {esAdmin() && (
+              <div className="flex gap-2 mt-2">
+                ...
+              </div>
+            )}
+          </div>
 
             {esAC ? (
               <>
