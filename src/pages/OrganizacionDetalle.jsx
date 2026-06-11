@@ -210,10 +210,7 @@ export default function OrganizacionDetalle() {
             }}
             className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
           >
-            📄 Ver carta de intención
-          </a>
-
-          <span
+            📄 Ver carta de intención <span
             className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
               org.estatus_carta === 'aprobada'
                 ? 'bg-green-100 text-green-700'
@@ -228,6 +225,9 @@ export default function OrganizacionDetalle() {
               ? '❌ Rechazada'
               : '⏳ Pendiente'}
           </span>
+          </a>
+
+          
 
           {esAdmin() && (
       <div className="flex gap-2 mt-2">
