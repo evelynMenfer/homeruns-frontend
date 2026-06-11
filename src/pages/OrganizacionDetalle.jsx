@@ -200,41 +200,41 @@ export default function OrganizacionDetalle() {
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
 
-          <div className="space-y-2">
-            <a
-              href="#"
-              onClick={async (e) => {
-                e.preventDefault()
-                const res = await api.get(`/organizaciones/${id}/carta`)
-                window.open(res.data.url, '_blank')
-              }}
-              className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
-            >
-              📄 Ver carta de intención
-            </a>
+        <>
+          <a
+            href="#"
+            onClick={async (e) => {
+              e.preventDefault()
+              const res = await api.get(`/organizaciones/${id}/carta`)
+              window.open(res.data.url, '_blank')
+            }}
+            className="text-sm font-medium text-[#D94218] hover:underline flex items-center gap-1"
+          >
+            📄 Ver carta de intención
+          </a>
 
-            <span
-              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                org.estatus_carta === 'aprobada'
-                  ? 'bg-green-100 text-green-700'
-                  : org.estatus_carta === 'rechazada'
-                  ? 'bg-red-100 text-red-700'
-                  : 'bg-yellow-100 text-yellow-700'
-              }`}
-            >
-              {org.estatus_carta === 'aprobada'
-                ? '✅ Aprobada'
+          <span
+            className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+              org.estatus_carta === 'aprobada'
+                ? 'bg-green-100 text-green-700'
                 : org.estatus_carta === 'rechazada'
-                ? '❌ Rechazada'
-                : '⏳ Pendiente'}
-            </span>
+                ? 'bg-red-100 text-red-700'
+                : 'bg-yellow-100 text-yellow-700'
+            }`}
+          >
+            {org.estatus_carta === 'aprobada'
+              ? '✅ Aprobada'
+              : org.estatus_carta === 'rechazada'
+              ? '❌ Rechazada'
+              : '⏳ Pendiente'}
+          </span>
 
-            {esAdmin() && (
-              <div className="flex gap-2 mt-2">
-                ...
-              </div>
-            )}
-          </div>
+          {esAdmin() && (
+            <div className="flex gap-2 mt-2">
+              ...
+            </div>
+          )}
+        </>
 
             {esAC ? (
               <>
