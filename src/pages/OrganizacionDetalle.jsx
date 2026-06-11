@@ -230,10 +230,32 @@ export default function OrganizacionDetalle() {
           </span>
 
           {esAdmin() && (
-            <div className="flex gap-2 mt-2">
-              ...
-            </div>
-          )}
+      <div className="flex gap-2 mt-2">
+        <button
+          onClick={async () => {
+            await api.post(`/organizaciones/${id}/validar-carta`, {
+              estatus_carta: 'aprobada'
+            })
+            cargarOrganizacion()
+          }}
+          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+        >
+          ✅ Aprobar
+        </button>
+
+        <button
+          onClick={async () => {
+            await api.post(`/organizaciones/${id}/validar-carta`, {
+              estatus_carta: 'rechazada'
+            })
+            cargarOrganizacion()
+          }}
+          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+        >
+          ❌ Rechazar
+        </button>
+      </div>
+    )}
         </>
 
             {esAC ? (
