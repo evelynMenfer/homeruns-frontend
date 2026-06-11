@@ -185,23 +185,6 @@ export default function OrganizacionDetalle() {
               Eliminar
             </button>
           )}
-          {!editando ? (
-            <button onClick={() => setEditando(true)}
-              className="px-4 py-2 border border-[#D94218] text-[#D94218] hover:bg-orange-50 rounded-lg text-sm transition">
-              Editar
-            </button>
-          ) : (
-            <>
-              <button onClick={() => { setEditando(false); setNuevaCarta(null) }}
-                className="px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg text-sm transition">
-                Cancelar
-              </button>
-              <button onClick={handleGuardar} disabled={guardando}
-                className="px-4 py-2 bg-[#D94218] text-white hover:bg-[#B83510] rounded-lg text-sm transition disabled:opacity-50">
-                {guardando ? 'Guardando...' : 'Guardar cambios'}
-              </button>
-            </>
-          )}
         </div>
       </div>
 
