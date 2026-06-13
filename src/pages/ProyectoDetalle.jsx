@@ -619,15 +619,24 @@ export default function ProyectoDetalle() {
             {(() => {
               const tipoOrg = proyecto.organizacion?.tipo_organizacion
               const docsRequeridos = tipoOrg === 'AC' ? [
-                'INE del representante legal',
-                'Carta de donataria autorizada',
-                'CSF (Constancia de Situación Fiscal)',
+                'Acta Constitutiva',
+                'Acta órgano de dirección vigente',
+                'Autorización de donataria autorizada',
+                'Constancia de situación fiscal',
+                'Recibo deducible de impuestos (copia)',
+                'Carátula del estado de cuenta',
+                'Identificación del representante legal',
+                'Opinión de cumplimiento positiva (no mayor a 1 mes)',
+                'Poderes legales vigentes',
+                'Cronograma',
               ] : [
-                'INE del presidente municipal',
-                'INE del síndico',
-                'Constancia de acreditación del presidente',
-                'Constancia de acreditación del síndico',
+                'Constancia de situación fiscal',
+                'INE Síndico y Presidente',
+                'Opinión de Cumplimiento',
+                'Constancia de Mayoría Completa',
                 'Comprobante de domicilio del municipio',
+                'Acta de instalación del municipio',
+                'Acreditación del síndico y presidente',
               ]
               return (
                 <div className="space-y-3">
