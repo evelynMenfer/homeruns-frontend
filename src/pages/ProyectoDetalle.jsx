@@ -65,7 +65,9 @@ export default function ProyectoDetalle() {
   const { toast, mostrar, cerrar } = useToast()
 
   const esMunicipio = proyecto?.organizacion?.tipo_organizacion === 'MUNICIPIO'
-  const rubroActual = rubroMap[proyecto?.categoria?.nombre_categoria] || ''
+  const categoriaActualId = editando ? formEdit.id_categoria : proyecto?.id_categoria
+  const nombreCategoriaActual = categorias.find(c => String(c.id_categoria) === String(categoriaActualId))?.nombre_categoria || proyecto?.categoria?.nombre_categoria
+  const rubroActual = rubroMap[nombreCategoriaActual] || ''
 
   useEffect(() => {
     cargarProyecto()
@@ -250,6 +252,19 @@ export default function ProyectoDetalle() {
     setFormEdit({ ...formEdit, [e.target.name]: e.target.value })
   }
 
+  const handleCategoriaChange = async (e) => {
+    const idCat = e.target.value
+    setFormEdit({ ...formEdit, id_categoria: idCat })
+    const cat = categorias.find(c => String(c.id_categoria) === String(idCat))
+    const nuevoRubro = rubroMap[cat?.nombre_categoria] || ''
+    setRespuestas({})
+    if (esMunicipio && nuevoRubro) {
+      await cargarPreguntasRubro(nuevoRubro)
+    } else {
+      setPreguntasRubro([])
+    }
+  }
+
   const handleRespuesta = (e) => {
     setRespuestas({ ...respuestas, [e.target.name]: e.target.value })
   }
@@ -367,7 +382,7 @@ export default function ProyectoDetalle() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Rubro principal del proyecto</label>
-                    <select name="id_categoria" value={formEdit.id_categoria || ''} onChange={handleChange} className={inputClass}>
+                    <select name="id_categoria" value={formEdit.id_categoria || ''} onChange={handleCategoriaChange} className={inputClass}>
                       <option value="">Seleccionar...</option>
                       {categorias.map(cat => (
                         <option key={cat.id_categoria} value={cat.id_categoria}>
