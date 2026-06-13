@@ -297,7 +297,7 @@ export default function OrganizacionForm({ onGuardado, onCancelar }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Período de gestión administrativa</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Periodo de gestión administrativa</label>
                 <input name="periodo_gestion" value={detalle.periodo_gestion} onChange={handleDetalle} className={inputClass} />
               </div>
               <div>

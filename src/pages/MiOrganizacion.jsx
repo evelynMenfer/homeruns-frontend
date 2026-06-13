@@ -329,24 +329,10 @@ export default function MiOrganizacion() {
                 {campoTexto('Correo electrónico', 'email', false, 'email')}
                 {campoTextarea('Dirección fiscal', 'direccion_fiscal')}
                 {campoParticipo()}
-
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
-                  <div className="space-y-3">
-                    {campoTexto('Nombre', 'nombre_presidente', true)}
-                    {campoTexto('Teléfono', 'telefono_presidente', true)}
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
-                  <div className="space-y-3">
-                    {campoTexto('Nombre', 'nombre_sindico', true)}
-                    {campoTexto('Teléfono', 'telefono_sindico', true)}
-                  </div>
-                </div>
-
-                {seccionContador()}
+                {campoTexto('Periodo de gestión', 'periodo_gestion', true)}
+                {campoTextarea('Actividad económica', 'actividad_economica', true)}
+                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
+                
               </>
             )}
           </div>
@@ -368,9 +354,24 @@ export default function MiOrganizacion() {
               </>
             ) : (
               <>
-                {campoTexto('Período de gestión', 'periodo_gestion', true)}
-                {campoTextarea('Actividad económica', 'actividad_economica', true)}
-                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
+                  <div className="space-y-3">
+                    {campoTexto('Nombre', 'nombre_presidente', true)}
+                    {campoTexto('Teléfono', 'telefono_presidente', true)}
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
+                  <div className="space-y-3">
+                    {campoTexto('Nombre', 'nombre_sindico', true)}
+                    {campoTexto('Teléfono', 'telefono_sindico', true)}
+                  </div>
+                </div>
+
+                {seccionContador()}
               </>
             )}
           </div>

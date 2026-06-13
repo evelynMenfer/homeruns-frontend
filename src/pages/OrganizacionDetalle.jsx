@@ -354,7 +354,7 @@ export default function OrganizacionDetalle() {
               </>
             ) : (
               <>
-                {campo('Período de gestión', 'periodo_gestion', true)}
+                {campo('Periodo de gestión', 'periodo_gestion', true)}
                 {campoTextarea('Actividad económica', 'actividad_economica', true)}
                 {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
               </>
