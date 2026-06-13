@@ -612,6 +612,79 @@ export default function ProyectoDetalle() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Panel lateral */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold text-gray-700 mb-3">Organización</h3>
+            <p className="text-sm font-medium">
+              {proyecto.organizacion?.asociacion_civil?.razon_social ||
+               proyecto.organizacion?.municipio?.nombre_municipio ||
+               proyecto.organizacion?.rfc || '—'}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              {proyecto.organizacion?.tipo_organizacion === 'AC' ? 'Asociación Civil' : 'Municipio'}
+            </p>
+            <p className="text-xs text-gray-500">{proyecto.organizacion?.email}</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold text-gray-700 mb-3">Ubicación geográfica del proyecto</h3>
+            {editando ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Municipio</label>
+                  <input name="municipio" value={formEdit.municipio} onChange={handleChange} className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Estado</label>
+                  <input name="estado" value={formEdit.estado} onChange={handleChange} className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
+                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange} className={inputClass} />
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm">{proyecto.ubicacion?.domicilio || '—'}</p>
+                <p className="text-sm text-gray-500">{proyecto.ubicacion?.municipio}, {proyecto.ubicacion?.estado}</p>
+              </>
+            )}
+          </div>
+
+          {esAdmin() && (
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="font-semibold text-gray-700 mb-3">Evaluar proyecto</h3>
+              {!cambiandoEstado ? (
+                <button onClick={() => setCambiandoEstado(true)}
+                  className="w-full border border-[#D94218] text-[#D94218] hover:bg-orange-50 py-2 rounded-lg text-sm transition">
+                  Cambiar estado
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)} className={inputClass}>
+                    {estados.map(e => (
+                      <option key={e} value={e}>{e}</option>
+                    ))}
+                  </select>
+                  <textarea value={comentario} onChange={e => setComentario(e.target.value)}
+                    placeholder="Comentario (opcional)" rows={2} className={inputClass} />
+                  <div className="flex gap-2">
+                    <button onClick={() => setCambiandoEstado(false)}
+                      className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition">
+                      Cancelar
+                    </button>
+                    <button onClick={handleCambiarEstado} disabled={guardando}
+                      className="flex-1 bg-[#D94218] text-white py-2 rounded-lg text-sm hover:bg-[#B83510] transition disabled:opacity-50">
+                      {guardando ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Documentos */}
           <div className="bg-white rounded-xl shadow p-6">
@@ -739,80 +812,6 @@ export default function ProyectoDetalle() {
               )
             })()}
           </div>
-        </div>
-
-        {/* Panel lateral */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-3">Organización</h3>
-            <p className="text-sm font-medium">
-              {proyecto.organizacion?.asociacion_civil?.razon_social ||
-               proyecto.organizacion?.municipio?.nombre_municipio ||
-               proyecto.organizacion?.rfc || '—'}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              {proyecto.organizacion?.tipo_organizacion === 'AC' ? 'Asociación Civil' : 'Municipio'}
-            </p>
-            <p className="text-xs text-gray-500">{proyecto.organizacion?.email}</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-3">Ubicación geográfica del proyecto</h3>
-            {editando ? (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Municipio</label>
-                  <input name="municipio" value={formEdit.municipio} onChange={handleChange} className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Estado</label>
-                  <input name="estado" value={formEdit.estado} onChange={handleChange} className={inputClass} />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
-                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange} className={inputClass} />
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="text-sm">{proyecto.ubicacion?.domicilio || '—'}</p>
-                <p className="text-sm text-gray-500">{proyecto.ubicacion?.municipio}, {proyecto.ubicacion?.estado}</p>
-              </>
-            )}
-          </div>
-
-          {esAdmin() && (
-            <div className="bg-white rounded-xl shadow p-6">
-              <h3 className="font-semibold text-gray-700 mb-3">Evaluar proyecto</h3>
-              {!cambiandoEstado ? (
-                <button onClick={() => setCambiandoEstado(true)}
-                  className="w-full border border-[#D94218] text-[#D94218] hover:bg-orange-50 py-2 rounded-lg text-sm transition">
-                  Cambiar estado
-                </button>
-              ) : (
-                <div className="space-y-3">
-                  <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)} className={inputClass}>
-                    {estados.map(e => (
-                      <option key={e} value={e}>{e}</option>
-                    ))}
-                  </select>
-                  <textarea value={comentario} onChange={e => setComentario(e.target.value)}
-                    placeholder="Comentario (opcional)" rows={2} className={inputClass} />
-                  <div className="flex gap-2">
-                    <button onClick={() => setCambiandoEstado(false)}
-                      className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition">
-                      Cancelar
-                    </button>
-                    <button onClick={handleCambiarEstado} disabled={guardando}
-                      className="flex-1 bg-[#D94218] text-white py-2 rounded-lg text-sm hover:bg-[#B83510] transition disabled:opacity-50">
-                      {guardando ? 'Guardando...' : 'Guardar'}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Historial de estados */}
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold text-gray-700 mb-4">Historial de estados</h3>
