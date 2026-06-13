@@ -195,11 +195,10 @@ export default function OrganizacionDetalle() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         {/* Columna izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
-
+          <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
         <>
           
           {org.carta_intencion_ruta ? (
@@ -229,32 +228,32 @@ export default function OrganizacionDetalle() {
           
 
           {esAdmin() && (
-      <div className="flex gap-2 mt-2">
-        <button
-          onClick={async () => {
-            await api.post(`/organizaciones/${id}/validar-carta`, {
-              estatus_carta: 'aprobada'
-            })
-            cargarOrganizacion()
-          }}
-          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
-        >
-          ✅ Aprobar
-        </button>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={async () => {
+                  await api.post(`/organizaciones/${id}/validar-carta`, {
+                    estatus_carta: 'aprobada'
+                  })
+                  cargarOrganizacion()
+                }}
+                className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+              >
+                ✅ Aprobar
+              </button>
 
-        <button
-          onClick={async () => {
-            await api.post(`/organizaciones/${id}/validar-carta`, {
-              estatus_carta: 'rechazada'
-            })
-            cargarOrganizacion()
-          }}
-          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
-        >
-          ❌ Rechazar
-        </button>
-      </div>
-    )}
+              <button
+                onClick={async () => {
+                  await api.post(`/organizaciones/${id}/validar-carta`, {
+                    estatus_carta: 'rechazada'
+                  })
+                  cargarOrganizacion()
+                }}
+                className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+              >
+                ❌ Rechazar
+              </button>
+            </div>
+          )}
         </>
 
             {esAC ? (
@@ -310,28 +309,9 @@ export default function OrganizacionDetalle() {
                     <p className="text-sm font-medium">{org.participo_antes === 'S' ? 'Sí' : 'No'}</p>
                   )}
                 </div>
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
-                  <div className="space-y-3">
-                    {campo('Nombre', 'nombre_presidente', true)}
-                    {campo('Teléfono', 'telefono_presidente', true)}
-                  </div>
-                </div>
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
-                  <div className="space-y-3">
-                    {campo('Nombre', 'nombre_sindico', true)}
-                    {campo('Teléfono', 'telefono_sindico', true)}
-                  </div>
-                </div>
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-700 mb-3">Datos del contador</h4>
-                  <div className="space-y-3">
-                    {campo('Nombre', 'nombre_contador', true)}
-                    {campo('Teléfono', 'telefono_contador', true)}
-                    {campo('Correo', 'email_contador', true, 'email')}
-                  </div>
-                </div>
+                {campo('Periodo de gestión', 'periodo_gestion', true)}
+                {campoTextarea('Actividad económica', 'actividad_economica', true)}
+                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}   
               </>
             )}
           </div>
@@ -339,7 +319,6 @@ export default function OrganizacionDetalle() {
 
         {/* Columna derecha */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h3 className="font-semibold text-gray-700 mb-4">Datos generales</h3>
           <div className="space-y-4">
             {esAC ? (
               <>
@@ -353,9 +332,29 @@ export default function OrganizacionDetalle() {
               </>
             ) : (
               <>
-                {campo('Periodo de gestión', 'periodo_gestion', true)}
-                {campoTextarea('Actividad económica', 'actividad_economica', true)}
-                {campoTextarea('Logros alcanzados', 'logros_alcanzados', true)}
+                <div className="border-t pt-4">
+                    <h4 className="font-medium text-gray-700 mb-3">Presidente municipal</h4>
+                    <div className="space-y-3">
+                      {campo('Nombre', 'nombre_presidente', true)}
+                      {campo('Teléfono', 'telefono_presidente', true)}
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium text-gray-700 mb-3">Síndico municipal</h4>
+                    <div className="space-y-3">
+                      {campo('Nombre', 'nombre_sindico', true)}
+                      {campo('Teléfono', 'telefono_sindico', true)}
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <h4 className="font-medium text-gray-700 mb-3">Datos del contador</h4>
+                    <div className="space-y-3">
+                      {campo('Nombre', 'nombre_contador', true)}
+                      {campo('Teléfono', 'telefono_contador', true)}
+                      {campo('Correo', 'email_contador', true, 'email')}
+                    </div>
+                  </div>
+                
               </>
             )}
           </div>
