@@ -17,12 +17,23 @@ const estadoColor = {
 const estados = ['En revision', 'Aprobado', 'Rechazado', 'En ejecucion', 'Finalizado']
 
 const rangosBenef = [
-  { label: '0-12 años', campoM: 'beneficiarios_012m', campoH: 'beneficiarios_012h' },
-  { label: '13-29 años', campoM: 'beneficiarios_1329m', campoH: 'beneficiarios_1329h' },
-  { label: '30-59 años', campoM: 'beneficiarios_3059m', campoH: 'beneficiarios_3059h' },
-  { label: '60-64 años', campoM: 'beneficiarios_6064m', campoH: 'beneficiarios_6064h' },
-  { label: '65+ años', campoM: 'beneficiarios_65m', campoH: 'beneficiarios_65h' },
+  { label: '0 a 12 años', campoM: 'beneficiarios_012m', campoH: 'beneficiarios_012h' },
+  { label: '13 a 29 años', campoM: 'beneficiarios_1329m', campoH: 'beneficiarios_1329h' },
+  { label: '30 a 59 años', campoM: 'beneficiarios_3059m', campoH: 'beneficiarios_3059h' },
+  { label: '60 a 64 años', campoM: 'beneficiarios_6064m', campoH: 'beneficiarios_6064h' },
+  { label: '65 en adelante', campoM: 'beneficiarios_65m', campoH: 'beneficiarios_65h' },
 ]
+
+const rubroMap = {
+  'Cultura': 'cultura',
+  'Deporte': 'deporte',
+  'Medio Ambiente': 'medio_ambiente',
+  'Productivo': 'productivo',
+  'Salud': 'salud',
+  'Educación': 'educacion',
+}
+
+const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]"
 
 export default function ProyectoDetalle() {
   const { id } = useParams()
@@ -49,7 +60,12 @@ export default function ProyectoDetalle() {
   const [documentos, setDocumentos] = useState([])
   const [subiendoDoc, setSubiendoDoc] = useState(null)
   const [categorias, setCategorias] = useState([])
+  const [preguntasRubro, setPreguntasRubro] = useState([])
+  const [respuestas, setRespuestas] = useState({})
   const { toast, mostrar, cerrar } = useToast()
+
+  const esMunicipio = proyecto?.organizacion?.tipo_organizacion === 'MUNICIPIO'
+  const rubroActual = rubroMap[proyecto?.categoria?.nombre_categoria] || ''
 
   useEffect(() => {
     cargarProyecto()
@@ -57,6 +73,12 @@ export default function ProyectoDetalle() {
     cargarDocumentos()
     cargarCategorias()
   }, [id])
+
+  useEffect(() => {
+    if (rubroActual && esMunicipio) {
+      cargarPreguntasRubro(rubroActual)
+    }
+  }, [rubroActual, esMunicipio])
 
   const cargarProyecto = async () => {
     try {
@@ -77,11 +99,37 @@ export default function ProyectoDetalle() {
         domicilio: res.data.ubicacion?.domicilio || '',
         aplicacion: res.data.ubicacion?.aplicacion || '',
         id_categoria: res.data.id_categoria || '',
+        objetivo_general: res.data.objetivo_general || '',
+        alcance: res.data.alcance || '',
+        como_se_aplicara: res.data.como_se_aplicara || '',
+        hablantes_lengua_indigena: res.data.hablantes_lengua_indigena || '',
+        nombre_regidor: res.data.nombre_regidor || '',
+        telefono_regidor: res.data.telefono_regidor || '',
+        correo_regidor: res.data.correo_regidor || '',
       })
+
+      // Cargar respuestas existentes por rubro
+      const respuestasMap = {}
+      if (res.data.respuestas) {
+        res.data.respuestas.forEach(r => {
+          respuestasMap[r.campo] = r.respuesta
+        })
+      }
+      setRespuestas(respuestasMap)
     } catch (err) {
       console.error(err)
     } finally {
       setCargando(false)
+    }
+  }
+
+  const cargarPreguntasRubro = async (rubro) => {
+    try {
+      const res = await api.get(`/preguntas-rubro?rubro=${rubro}`)
+      setPreguntasRubro(res.data || [])
+    } catch (err) {
+      console.error(err)
+      setPreguntasRubro([])
     }
   }
 
@@ -176,6 +224,15 @@ export default function ProyectoDetalle() {
         fecha_termino: formEdit.fecha_termino,
         clasificacion: formEdit.clasificacion,
         id_categoria: formEdit.id_categoria,
+        objetivo_general: formEdit.objetivo_general,
+        alcance: formEdit.alcance,
+        como_se_aplicara: formEdit.como_se_aplicara,
+        hablantes_lengua_indigena: formEdit.hablantes_lengua_indigena,
+        nombre_regidor: formEdit.nombre_regidor,
+        telefono_regidor: formEdit.telefono_regidor,
+        correo_regidor: formEdit.correo_regidor,
+        rubro: rubroActual,
+        respuestas
       })
       await api.post(`/proyectos/${id}/beneficiarios`, beneficiarios)
       setEditando(false)
@@ -191,6 +248,10 @@ export default function ProyectoDetalle() {
   }
   const handleChange = (e) => {
     setFormEdit({ ...formEdit, [e.target.name]: e.target.value })
+  }
+
+  const handleRespuesta = (e) => {
+    setRespuestas({ ...respuestas, [e.target.name]: e.target.value })
   }
 
   const handleBenefChange = (e) => {
@@ -254,6 +315,10 @@ export default function ProyectoDetalle() {
   if (cargando) return <Layout><p className="text-gray-400">Cargando...</p></Layout>
   if (!proyecto) return <Layout><p className="text-gray-400">Proyecto no encontrado.</p></Layout>
 
+  const tituloRegidor = esMunicipio
+    ? `Regidor${rubroActual === 'medio_ambiente' ? ' de ecología' : rubroActual === 'deporte' ? ' de deportes' : rubroActual === 'salud' ? ' de salud' : ''} responsable`
+    : 'Responsable ante la FAHHO'
+
   return (
     <Layout>
       <div className="mb-6 flex items-center justify-between">
@@ -297,14 +362,12 @@ export default function ProyectoDetalle() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Nombre del proyecto</label>
-                  <input name="nombre_proyecto" value={formEdit.nombre_proyecto} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <input name="nombre_proyecto" value={formEdit.nombre_proyecto} onChange={handleChange} className={inputClass} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Rubro principal del proyecto</label>
-                    <select name="id_categoria" value={formEdit.id_categoria || ''} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+                    <select name="id_categoria" value={formEdit.id_categoria || ''} onChange={handleChange} className={inputClass}>
                       <option value="">Seleccionar...</option>
                       {categorias.map(cat => (
                         <option key={cat.id_categoria} value={cat.id_categoria}>
@@ -314,49 +377,67 @@ export default function ProyectoDetalle() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Clasificación</label>
-                    <select name="clasificacion" value={formEdit.clasificacion} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
-                      <option value="Primera vez">Primera vez</option>
-                      <option value="Continuidad">Continuidad</option>
+                    <label className="block text-xs text-gray-500 mb-1">¿Cómo clasifica el proyecto propuesto?</label>
+                    <select name="clasificacion" value={formEdit.clasificacion} onChange={handleChange} className={inputClass}>
+                      <option value="Primera vez">Implementado por primera vez</option>
+                      <option value="Continuidad">Continuidad de un proyecto</option>
                       <option value="Ejecutado anteriormente">Ejecutado anteriormente</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Monto solicitado</label>
-                    <input name="monto_solicitado" type="number" value={formEdit.monto_solicitado} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    <input name="monto_solicitado" type="number" value={formEdit.monto_solicitado} onChange={handleChange} className={inputClass} />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Costo total del proyecto</label>
-                    <input name="costo_total" type="number" value={formEdit.costo_total} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    <input name="costo_total" type="number" value={formEdit.costo_total} onChange={handleChange} className={inputClass} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Fecha inicio</label>
-                    <input name="fecha_inicio" type="date" value={formEdit.fecha_inicio} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    <label className="block text-xs text-gray-500 mb-1">Fecha de inicio</label>
+                    <input name="fecha_inicio" type="date" value={formEdit.fecha_inicio} onChange={handleChange} className={inputClass} />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Fecha término</label>
-                    <input name="fecha_termino" type="date" value={formEdit.fecha_termino} onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    <label className="block text-xs text-gray-500 mb-1">Fecha de término</label>
+                    <input name="fecha_termino" type="date" value={formEdit.fecha_termino} onChange={handleChange} className={inputClass} />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Responsable</label>
-                  <input name="responsable" value={formEdit.responsable} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <label className="block text-xs text-gray-500 mb-1">Describa el objetivo general del proyecto</label>
+                  <textarea name="objetivo_general" value={formEdit.objetivo_general} onChange={handleChange} rows={3} className={inputClass} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Objeto, metas y alcance del proyecto</label>
-                  <textarea name="descripcion" value={formEdit.descripcion} onChange={handleChange} rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <label className="block text-xs text-gray-500 mb-1">Describa el alcance del proyecto</label>
+                  <textarea name="alcance" value={formEdit.alcance} onChange={handleChange} rows={3} className={inputClass} />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Aplicación del donativo solicitado</label>
-                  <textarea name="aplicacion" value={formEdit.aplicacion || ''} onChange={handleChange} rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <label className="block text-xs text-gray-500 mb-1">Mencione de forma detallada cómo se aplicará el donativo solicitado (en especie)</label>
+                  <textarea name="como_se_aplicara" value={formEdit.como_se_aplicara} onChange={handleChange} rows={3} className={inputClass} />
+                </div>
+
+                {/* Regidor / Responsable */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-700 mb-3">{tituloRegidor}</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Nombre</label>
+                      <input name="nombre_regidor" value={formEdit.nombre_regidor} onChange={handleChange} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Teléfono</label>
+                      <input name="telefono_regidor" value={formEdit.telefono_regidor} onChange={handleChange} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">Correo institucional</label>
+                      <input name="correo_regidor" type="email" value={formEdit.correo_regidor} onChange={handleChange} className={inputClass} />
+                    </div>
+                  </div>
+                  {esMunicipio && (
+                    <div className="mt-3">
+                      <label className="block text-xs text-gray-500 mb-1">Antiguo campo "Responsable" (compatibilidad)</label>
+                      <input name="responsable" value={formEdit.responsable} onChange={handleChange} className={inputClass} />
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -365,33 +446,80 @@ export default function ProyectoDetalle() {
                   <p className="text-gray-500">Rubro principal del proyecto</p>
                   <p className="font-medium">{proyecto.categoria?.nombre_categoria || '—'}</p>
                 </div>
-                <div><p className="text-gray-500">Clasificación</p><p className="font-medium">{proyecto.clasificacion || '—'}</p></div>
+                <div><p className="text-gray-500">¿Cómo clasifica el proyecto propuesto?</p><p className="font-medium">{proyecto.clasificacion || '—'}</p></div>
                 <div>
                   <p className="text-gray-500">Monto solicitado</p>
                   <p className="font-medium">{proyecto.monto_solicitado ? `$${Number(proyecto.monto_solicitado).toLocaleString('es-MX')}` : '—'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Costo total</p>
+                  <p className="text-gray-500">Costo total del proyecto</p>
                   <p className="font-medium">{proyecto.costo_total ? `$${Number(proyecto.costo_total).toLocaleString('es-MX')}` : '—'}</p>
                 </div>
-                <div><p className="text-gray-500">Fecha inicio</p><p className="font-medium">{proyecto.fecha_inicio || '—'}</p></div>
-                <div><p className="text-gray-500">Fecha término</p><p className="font-medium">{proyecto.fecha_termino || '—'}</p></div>
-                <div><p className="text-gray-500">Responsable</p><p className="font-medium">{proyecto.responsable || '—'}</p></div>
+                <div><p className="text-gray-500">Fecha de inicio</p><p className="font-medium">{proyecto.fecha_inicio || '—'}</p></div>
+                <div><p className="text-gray-500">Fecha de término</p><p className="font-medium">{proyecto.fecha_termino || '—'}</p></div>
+
                 <div className="col-span-2">
-                  <p className="text-gray-500">Objeto, metas y alcance del proyecto</p>
-                  <p className="mt-1">{proyecto.descripcion || '—'}</p>
+                  <p className="text-gray-500">Describa el objetivo general del proyecto</p>
+                  <p className="mt-1">{proyecto.objetivo_general || '—'}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-gray-500">Aplicación del donativo solicitado</p>
-                  <p className="mt-1">{proyecto.ubicacion?.aplicacion || '—'}</p>
+                  <p className="text-gray-500">Describa el alcance del proyecto</p>
+                  <p className="mt-1">{proyecto.alcance || '—'}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-gray-500">Mencione de forma detallada cómo se aplicará el donativo solicitado (en especie)</p>
+                  <p className="mt-1">{proyecto.como_se_aplicara || proyecto.ubicacion?.aplicacion || '—'}</p>
+                </div>
+
+                <div className="col-span-2 border-t pt-3">
+                  <p className="text-gray-500 mb-2 font-medium">{tituloRegidor}</p>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-gray-500 text-xs">Nombre</p>
+                      <p className="font-medium">{proyecto.nombre_regidor || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 text-xs">Teléfono</p>
+                      <p className="font-medium">{proyecto.telefono_regidor || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 text-xs">Correo</p>
+                      <p className="font-medium">{proyecto.correo_regidor || '—'}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
+          {/* Información específica por rubro */}
+          {esMunicipio && preguntasRubro.length > 0 && (
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="font-semibold text-gray-700 mb-4">
+                Información específica — {proyecto.categoria?.nombre_categoria}
+              </h3>
+              <div className="space-y-4">
+                {preguntasRubro.map(p => (
+                  <div key={p.id}>
+                    <p className="text-gray-500 text-sm mb-1">{p.etiqueta}</p>
+                    {editando ? (
+                      p.tipo === 'textarea' ? (
+                        <textarea name={p.campo} value={respuestas[p.campo] || ''} onChange={handleRespuesta} rows={2} className={inputClass} />
+                      ) : (
+                        <input type={p.tipo === 'number' ? 'number' : 'text'} name={p.campo} value={respuestas[p.campo] || ''} onChange={handleRespuesta} className={inputClass} />
+                      )
+                    ) : (
+                      <p className="text-sm font-medium">{respuestas[p.campo] || '—'}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Beneficiarios */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h3 className="font-semibold text-gray-700 mb-4">Beneficiarios directos</h3>
+            <h3 className="font-semibold text-gray-700 mb-4">Número de beneficiarios directos señalando los rangos de edad y sexo</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm mb-4">
                 <thead>
@@ -431,7 +559,7 @@ export default function ProyectoDetalle() {
               </table>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
+            <div className="grid grid-cols-3 gap-4 text-sm border-t pt-4">
               <div>
                 <p className="text-gray-500 mb-1">Total beneficiarios directos</p>
                 <p className="text-xl font-bold" style={{ color: '#D94218' }}>
@@ -439,24 +567,31 @@ export default function ProyectoDetalle() {
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 mb-1">Beneficiarios indirectos</p>
+                <p className="text-gray-500 mb-1">Número de beneficiarios indirectos</p>
                 {editando ? (
                   <input type="number" name="beneficiarios_indirectos"
                     value={beneficiarios.beneficiarios_indirectos === 0 ? '' : beneficiarios.beneficiarios_indirectos}
-                    onChange={handleBenefChange} min="0"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    onChange={handleBenefChange} min="0" className={inputClass} />
                 ) : (
                   <p className="text-xl font-bold text-gray-700">{beneficiarios.beneficiarios_indirectos || 0}</p>
+                )}
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">Número de hablantes de lengua indígena</p>
+                {editando ? (
+                  <input type="number" name="hablantes_lengua_indigena"
+                    value={formEdit.hablantes_lengua_indigena}
+                    onChange={handleChange} min="0" className={inputClass} />
+                ) : (
+                  <p className="text-xl font-bold text-gray-700">{proyecto.hablantes_lengua_indigena || 0}</p>
                 )}
               </div>
             </div>
 
             <div className="mt-4">
-              <p className="text-gray-500 text-sm mb-1">Indicadores que permitirán evaluar el proyecto</p>
+              <p className="text-gray-500 text-sm mb-1">¿Cuáles serán los indicadores que le permitirán evaluar el proyecto?</p>
               {editando ? (
-                <textarea name="indicadores" value={beneficiarios.indicadores || ''} onChange={handleBenefChange} rows={3}
-                  placeholder="Describe los indicadores del proyecto..."
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                <textarea name="indicadores" value={beneficiarios.indicadores || ''} onChange={handleBenefChange} rows={3} className={inputClass} />
               ) : (
                 <p className="text-sm text-gray-700">{beneficiarios.indicadores || '—'}</p>
               )}
@@ -603,18 +738,15 @@ export default function ProyectoDetalle() {
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Municipio</label>
-                  <input name="municipio" value={formEdit.municipio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <input name="municipio" value={formEdit.municipio} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Estado</label>
-                  <input name="estado" value={formEdit.estado} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <input name="estado" value={formEdit.estado} onChange={handleChange} className={inputClass} />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Domicilio</label>
-                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                  <input name="domicilio" value={formEdit.domicilio} onChange={handleChange} className={inputClass} />
                 </div>
               </div>
             ) : (
@@ -635,15 +767,13 @@ export default function ProyectoDetalle() {
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]">
+                  <select value={nuevoEstado} onChange={e => setNuevoEstado(e.target.value)} className={inputClass}>
                     {estados.map(e => (
                       <option key={e} value={e}>{e}</option>
                     ))}
                   </select>
                   <textarea value={comentario} onChange={e => setComentario(e.target.value)}
-                    placeholder="Comentario (opcional)" rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#D94218]" />
+                    placeholder="Comentario (opcional)" rows={2} className={inputClass} />
                   <div className="flex gap-2">
                     <button onClick={() => setCambiandoEstado(false)}
                       className="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50 transition">
