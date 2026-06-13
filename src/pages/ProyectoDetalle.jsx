@@ -511,7 +511,7 @@ export default function ProyectoDetalle() {
           {esMunicipio && preguntasRubro.length > 0 && (
             <div className="bg-white rounded-xl shadow p-6">
               <h3 className="font-semibold text-gray-700 mb-4">
-                Información específica — {proyecto.categoria?.nombre_categoria}
+              Información específica — {nombreCategoriaActual}
               </h3>
               <div className="space-y-4">
                 {preguntasRubro.map(p => (
