@@ -299,7 +299,6 @@ export default function MiOrganizacion() {
         {/* Columna izquierda */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-4">
-            {campoCarta()}
 
             {esAC ? (
               <>
@@ -372,6 +371,7 @@ export default function MiOrganizacion() {
                 </div>
 
                 {seccionContador()}
+                {campoCarta()}
               </>
             )}
           </div>
